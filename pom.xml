@@ -219,6 +219,126 @@
 
   <profiles>
     <profile>
+      <id>pgjsonb</id>
+
+      <properties>
+        <jdbcdriver.groupId>org.postgresql</jdbcdriver.groupId>
+        <jdbcdriver.artifactId>postgresql</jdbcdriver.artifactId>
+      </properties>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.syncope.core</groupId>
+          <artifactId>syncope-core-persistence-jpa-pgjsonb</artifactId>
+          <version>${syncope.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <version>${jdbc.postgresql.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <defaultGoal>clean verify</defaultGoal>
+
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <configuration>
+              <images>
+                <image>
+                  <name>postgres:${docker.postgresql.version}</name>
+                  <run>
+                    <env>
+                      <POSTGRES_DB>syncope</POSTGRES_DB>
+                      <POSTGRES_USER>syncope</POSTGRES_USER>
+                      <POSTGRES_PASSWORD>syncope</POSTGRES_PASSWORD>
+                    </env>
+                    <ports>
+                      <port>5432:5432</port>
+                    </ports>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-postgres</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-postgres</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                  <goal>remove</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <inherited>true</inherited>
+            <executions>
+              <execution>
+                <id>start-container</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-container</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <excludes>
+              <exclude>persistence.properties</exclude>
+              <exclude>provisioning.properties</exclude>
+              <exclude>indexes.xml</exclude>
+              <exclude>views.xml</exclude>
+            </excludes>
+          </resource>
+          <resource>
+            <directory>src/main/resources/pgjsonb</directory>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
+        <testResources>
+          <testResource>
+            <directory>src/main/resources/pgjsonb</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>persistence.properties</include>
+              <include>provisioning.properties</include>
+              <include>indexes.xml</include>
+              <include>views.xml</include>
+            </includes>            
+          </testResource>
+        </testResources>
+      </build>
+    </profile>
+
+    <profile>
       <id>postgres</id>
 
       <properties>
