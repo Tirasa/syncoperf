@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2018 Tirasa
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache.syncope</groupId>
+    <artifactId>syncope</artifactId>
+    <version>2.1.3-SNAPSHOT</version>
+  </parent>
+
+  <name>Apache Syncope Performance Tools</name>
+  <groupId>net.tirasa.syncope</groupId>
+  <artifactId>syncoPerf</artifactId>
+  <packaging>war</packaging>
+
+  <properties>
+    <syncope.version>2.1.3-SNAPSHOT</syncope.version>
+
+    <secretKey>sadfaffdasfadfasdafds</secretKey>
+    <anonymousKey>adsfsdfadsfasdf</anonymousKey>
+    <jwsKey>asdfasdfasdfdasfsd</jwsKey>
+    <adminPassword>DE088591C00CC98B36F5ADAAF7DA2B004CF7F2FE7BBB45B766B6409876E2F3DB13C7905C6AA59464</adminPassword>
+
+    <rat.skip>true</rat.skip>
+    <checkstyle.skip>true</checkstyle.skip>
+  </properties>
+
+  <dependencies>
+    <dependency> 
+      <groupId>javax.servlet</groupId> 
+      <artifactId>javax.servlet-api</artifactId> 
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.syncope.core</groupId>
+      <artifactId>syncope-core-rest-cxf</artifactId>
+      <version>${syncope.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.syncope.core</groupId>
+      <artifactId>syncope-core-workflow-java</artifactId>
+      <version>${syncope.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.syncope.core</groupId>
+      <artifactId>syncope-core-persistence-jpa</artifactId>
+      <version>${syncope.version}</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.lmax</groupId>
+      <artifactId>disruptor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>syncope</finalName>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <inherited>true</inherited>
+        <executions>
+          <execution>
+            <id>set-bundles</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin> 
+        <groupId>com.lazerycode.jmeter</groupId> 
+        <artifactId>jmeter-maven-plugin</artifactId> 
+        <version>2.8.1</version>
+        <configuration>
+          <testFilesIncluded>
+            <jMeterTestFile>create_delete.jmx</jMeterTestFile>
+            <jMeterTestFile>create_read_delete.jmx</jMeterTestFile>
+            <jMeterTestFile>create_search_delete.jmx</jMeterTestFile>
+            <jMeterTestFile>create_update_delete.jmx</jMeterTestFile>
+            <jMeterTestFile>heterogeneous.jmx</jMeterTestFile>
+          </testFilesIncluded>
+          <propertiesUser>
+            <threads>1</threads>
+            <loops>1</loops>
+            <rampup>1</rampup>
+            <gap>3000</gap>
+          </propertiesUser>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jmeter-tests</id>
+            <goals>
+              <goal>jmeter</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <inherited>true</inherited>
+        <configuration>
+          <container>
+            <dependencies>
+              <dependency>
+                <groupId>${jdbcdriver.groupId}</groupId>
+                <artifactId>${jdbcdriver.artifactId}</artifactId>
+              </dependency>
+            </dependencies>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <properties>
+              <cargo.servlet.port>${cargo.servlet.port}</cargo.servlet.port>
+              <cargo.tomcat.ajp.port>${cargo.tomcat.ajp.port}</cargo.tomcat.ajp.port>
+              <cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
+
+              <cargo.jvmargs>-XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -Xmx1024m -Xms512m</cargo.jvmargs>
+            </properties>
+          </configuration>
+          <deployables>
+            <deployable>
+              <location>${project.build.directory}/${project.build.finalName}</location>
+              <pingURL>http://localhost:${cargo.servlet.port}/syncope/cacheStats.jsp</pingURL>
+              <pingTimeout>60000</pingTimeout>
+              <properties>
+                <context>syncope</context>
+              </properties>
+            </deployable>
+          </deployables>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>ianal-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/main/resources/domains</directory>
+        <targetPath>${project.build.directory}/test-classes/domains</targetPath>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>postgres</id>
+
+      <properties>
+        <jdbcdriver.groupId>org.postgresql</jdbcdriver.groupId>
+        <jdbcdriver.artifactId>postgresql</jdbcdriver.artifactId>
+      </properties>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <version>${jdbc.postgresql.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <defaultGoal>clean verify</defaultGoal>
+
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <configuration>
+              <images>
+                <image>
+                  <name>postgres:${docker.postgresql.version}</name>
+                  <run>
+                    <env>
+                      <POSTGRES_DB>syncope</POSTGRES_DB>
+                      <POSTGRES_USER>syncope</POSTGRES_USER>
+                      <POSTGRES_PASSWORD>syncope</POSTGRES_PASSWORD>
+                    </env>
+                    <ports>
+                      <port>5432:5432</port>
+                    </ports>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-postgres</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-postgres</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                  <goal>remove</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <inherited>true</inherited>
+            <executions>
+              <execution>
+                <id>start-container</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-container</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <excludes>
+              <exclude>persistence.properties</exclude>
+              <exclude>provisioning.properties</exclude>
+              <exclude>views.xml</exclude>
+            </excludes>
+          </resource>
+          <resource>
+            <directory>src/main/resources/postgres</directory>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
+        <testResources>
+          <testResource>
+            <directory>src/main/resources/postgres</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>persistence.properties</include>
+              <include>provisioning.properties</include>
+              <include>views.xml</include>
+            </includes>            
+          </testResource>
+        </testResources>
+      </build>
+    </profile>
+  </profiles>
+</project>
