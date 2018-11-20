@@ -77,28 +77,28 @@ under the License.
   
   <loggers>
 
-    <asyncLogger name="org.apache.syncope.core.persistence" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.syncope.core.persistence" additivity="false" level="ERROR">
       <appender-ref ref="persistenceFile"/>
       <appender-ref ref="persistence"/>
     </asyncLogger>
-    <asyncLogger name="org.springframework.orm" additivity="false" level="INFO">
+    <asyncLogger name="org.springframework.orm" additivity="false" level="ERROR">
       <appender-ref ref="persistenceFile"/>
       <appender-ref ref="persistence"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.ibatis" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.ibatis" additivity="false" level="ERROR">
       <appender-ref ref="persistenceFile"/>
       <appender-ref ref="persistence"/>
     </asyncLogger>
     
-    <asyncLogger name="org.apache.syncope.core.rest" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.syncope.core.rest" additivity="false" level="ERROR">
       <appender-ref ref="restFile"/>
       <appender-ref ref="rest"/>
     </asyncLogger>
-    <asyncLogger name="org.springframework.web" additivity="false" level="INFO">
+    <asyncLogger name="org.springframework.web" additivity="false" level="ERROR">
       <appender-ref ref="restFile"/>
       <appender-ref ref="rest"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.http" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.http" additivity="false" level="ERROR">
       <appender-ref ref="restFile"/>
       <appender-ref ref="rest"/>
     </asyncLogger>
@@ -107,36 +107,36 @@ under the License.
       <appender-ref ref="rest"/>
     </asyncLogger>
     
-    <asyncLogger name="org.identityconnectors" additivity="false" level="DEBUG">
+    <asyncLogger name="org.identityconnectors" additivity="false" level="ERROR">
       <appender-ref ref="connidFile"/>
       <appender-ref ref="connid"/>
     </asyncLogger>
-    <asyncLogger name="net.tirasa.connid" additivity="false" level="DEBUG">
+    <asyncLogger name="net.tirasa.connid" additivity="false" level="ERROR">
       <appender-ref ref="connidFile"/>
       <appender-ref ref="connid"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.syncope.core.provisioning.api.ConnIdBundleManager" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.syncope.core.provisioning.api.ConnIdBundleManager" additivity="false" level="ERROR">
       <appender-ref ref="connidFile"/>
       <appender-ref ref="connid"/>
     </asyncLogger>
     
-    <asyncLogger name="org.apache.syncope" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.syncope" additivity="false" level="ERROR">
       <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.syncope.core.provisioning" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.syncope.core.provisioning" additivity="false" level="ERROR">
       <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.syncope.core.logic" additivity="false" level="INFO">
+    <asyncLogger name="org.apache.syncope.core.logic" additivity="false" level="ERROR">
       <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.springframework" additivity="false" level="INFO">
+    <asyncLogger name="org.springframework" additivity="false" level="ERROR">
       <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.quartz" additivity="false" level="INFO">
+    <asyncLogger name="org.quartz" additivity="false" level="ERROR">
       <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
@@ -176,7 +176,7 @@ under the License.
       <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.elasticsearch" additivity="false" level="INFO">
+    <asyncLogger name="org.elasticsearch" additivity="false" level="ERROR">
       <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>

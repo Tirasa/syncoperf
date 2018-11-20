@@ -34,6 +34,12 @@
   <properties>
     <syncope.version>2.1.3-SNAPSHOT</syncope.version>
 
+    <threads>10</threads>
+    <loops>30</loops>
+    <rampup>10</rampup>
+    <gap>4000</gap>
+    <duration>60</duration>
+
     <secretKey>sadfaffdasfadfasdafds</secretKey>
     <anonymousKey>adsfsdfadsfasdf</anonymousKey>
     <jwsKey>asdfasdfasdfdasfsd</jwsKey>
@@ -129,17 +135,18 @@
         <version>2.8.1</version>
         <configuration>
           <testFilesIncluded>
-            <jMeterTestFile>create_delete.jmx</jMeterTestFile>
-            <jMeterTestFile>create_read_delete.jmx</jMeterTestFile>
-            <jMeterTestFile>create_search_delete.jmx</jMeterTestFile>
-            <jMeterTestFile>create_update_delete.jmx</jMeterTestFile>
+            <!--<jMeterTestFile>create_delete.jmx</jMeterTestFile>-->
+            <!--<jMeterTestFile>create_read_delete.jmx</jMeterTestFile>-->
+            <!--<jMeterTestFile>create_search_delete.jmx</jMeterTestFile>-->
+            <!--<jMeterTestFile>create_update_delete.jmx</jMeterTestFile>-->
             <jMeterTestFile>heterogeneous.jmx</jMeterTestFile>
           </testFilesIncluded>
           <propertiesUser>
-            <threads>1</threads>
-            <loops>1</loops>
-            <rampup>1</rampup>
-            <gap>3000</gap>
+            <threads>${threads}</threads>
+            <loops>${loops}</loops>
+            <rampup>${rampup}</rampup>
+            <gap>${gap}</gap>
+            <duration>${duration}</duration>
           </propertiesUser>
         </configuration>
         <executions>
@@ -172,7 +179,12 @@
               <cargo.tomcat.ajp.port>${cargo.tomcat.ajp.port}</cargo.tomcat.ajp.port>
               <cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
 
-              <cargo.jvmargs>-XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -Xmx1024m -Xms512m</cargo.jvmargs>
+              <cargo.jvmargs>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server
+                -Xms2048m -Xmx2048m -XX:NewSize=256m -XX:MaxNewSize=256m
+                -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+CMSIncrementalMode
+                -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=60
+                -XX:+ScavengeBeforeFullGC -XX:+CMSScavengeBeforeRemark
+                -Djava.security.egd=file:/dev/./urandom</cargo.jvmargs>
             </properties>
           </configuration>
           <deployables>
@@ -334,6 +346,11 @@
               <include>views.xml</include>
             </includes>            
           </testResource>
+          <testResource>
+            <directory>src/main/resources/pgjsonb/domains</directory>
+            <targetPath>${project.build.directory}/test-classes/domains</targetPath>
+            <filtering>true</filtering>
+          </testResource>
         </testResources>
       </build>
     </profile>
@@ -444,7 +461,12 @@
               <include>persistence.properties</include>
               <include>provisioning.properties</include>
               <include>views.xml</include>
-            </includes>            
+            </includes>    
+          </testResource>
+          <testResource>
+            <directory>src/main/resources/postgres/domains</directory>
+            <targetPath>${project.build.directory}/test-classes/domains</targetPath>
+            <filtering>true</filtering>
           </testResource>
         </testResources>
       </build>
