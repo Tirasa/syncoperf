@@ -22,21 +22,34 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.SyncopeConstants;
 import org.apache.syncope.common.lib.to.AttrTO;
+import org.apache.syncope.common.lib.to.ExecTO;
+import org.apache.syncope.common.lib.to.ImplementationTO;
 import org.apache.syncope.common.lib.to.MembershipTO;
-import org.apache.syncope.common.lib.to.PagedResult;
+import org.apache.syncope.common.lib.to.SchedTaskTO;
+import org.apache.syncope.common.lib.to.TaskTO;
 import org.apache.syncope.common.lib.to.UserTO;
-import org.apache.syncope.common.rest.api.beans.AnyQuery;
+import org.apache.syncope.common.lib.types.ImplementationEngine;
+import org.apache.syncope.common.lib.types.ImplementationType;
+import org.apache.syncope.common.lib.types.TaskType;
+import org.apache.syncope.common.rest.api.RESTHeaders;
+import org.apache.syncope.common.rest.api.beans.ExecuteQuery;
+import org.apache.syncope.common.rest.api.service.ImplementationService;
+import org.apache.syncope.common.rest.api.service.SyncopeService;
+import org.apache.syncope.common.rest.api.service.TaskService;
 import org.apache.syncope.common.rest.api.service.UserService;
 import org.apache.syncope.core.spring.security.SecureRandomUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class BulkLoadITCase {
+
+    private static final String ES_REINDEX = "org.apache.syncope.core.provisioning.java.job.ElasticsearchReindex";
 
     private static final SyncopeClientFactoryBean CLIENT_FACTORY =
             new SyncopeClientFactoryBean().setAddress("http://localhost:9080/syncope/rest/");
@@ -56,6 +69,72 @@ public class BulkLoadITCase {
             fail(e.getMessage());
         }
         assertNotNull(USERS);
+    }
+
+    private static ExecTO execTask(
+            final TaskService taskService, final TaskType type, final String taskKey,
+            final String initialStatus, final int maxWaitSeconds, final boolean dryRun) {
+
+        TaskTO taskTO = taskService.read(type, taskKey, true);
+        assertNotNull(taskTO);
+        assertNotNull(taskTO.getExecutions());
+
+        int preSyncSize = taskTO.getExecutions().size();
+        ExecTO execution = taskService.execute(
+                new ExecuteQuery.Builder().key(taskTO.getKey()).dryRun(dryRun).build());
+        assertEquals(initialStatus, execution.getStatus());
+
+        int i = 0;
+        int maxit = maxWaitSeconds;
+
+        // wait for completion (executions incremented)
+        do {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+
+            taskTO = taskService.read(type, taskTO.getKey(), true);
+
+            assertNotNull(taskTO);
+            assertNotNull(taskTO.getExecutions());
+
+            i++;
+        } while (preSyncSize == taskTO.getExecutions().size() && i < maxit);
+        if (i == maxit) {
+            fail("Timeout when executing task " + taskKey);
+        }
+        return taskTO.getExecutions().get(taskTO.getExecutions().size() - 1);
+    }
+
+    @BeforeAll
+    public static void elasticsearch() {
+        if (CLIENT.getService(SyncopeService.class).platform().getAnySearchDAO().contains("Elasticsearch")) {
+            try {
+                ImplementationTO reindex = new ImplementationTO();
+                reindex.setKey(ES_REINDEX);
+                reindex.setEngine(ImplementationEngine.JAVA);
+                reindex.setType(ImplementationType.TASKJOB_DELEGATE);
+                reindex.setBody(ES_REINDEX);
+                CLIENT.getService(ImplementationService.class).create(reindex);
+
+                SchedTaskTO task = new SchedTaskTO();
+                task.setJobDelegate(reindex.getKey());
+                task.setName("Elasticsearch Reindex");
+                Response response = CLIENT.getService(TaskService.class).create(TaskType.SCHEDULED, task);
+                String taskKey = response.getHeaderString(RESTHeaders.RESOURCE_KEY);
+
+                execTask(
+                        CLIENT.getService(TaskService.class),
+                        TaskType.SCHEDULED,
+                        taskKey,
+                        "JOB_FIRED",
+                        60,
+                        false);
+            } catch (Exception e) {
+                fail("Could not initialize Elasticsearch", e);
+            }
+        }
     }
 
     private UserTO build() {
@@ -114,10 +193,5 @@ public class BulkLoadITCase {
         for (int i = 0; i < USERS; i++) {
             userService.create(build(), true);
         }
-
-        PagedResult<UserTO> matching = userService.search(new AnyQuery.Builder().realm(SyncopeConstants.ROOT_REALM).
-                fiql(SyncopeClient.getUserSearchConditionBuilder().is("username").notNullValue().query()).
-                page(1).size(0).build());
-        assertEquals(USERS.intValue(), matching.getTotalCount());
     }
 }

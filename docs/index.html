@@ -21,7 +21,7 @@
       }
 
       /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-      .row.content {height: 600px}
+      .row.content {height: 650px}
 
       /* Set gray background color and 100% height */
       .sidenav {
@@ -99,8 +99,9 @@
                 <th class="th-sm">DBMS</th>
                 <th class="th-sm"># Users</th>
                 <th class="th-sm">Dynamic Memberships</th>
-                <th class="th-sm">Elasticsearch Support</th>
-                <th>Full Report</th>
+                <th class="th-sm">Elasticsearch</th>
+                <th class="th-sm">Report</th>
+                <th class="th-sm">Maven args</th>
               </tr>
             </thead>
             <tbody>
@@ -110,13 +111,15 @@
                 <td class="text-center"><i class="fa fa-check"></i></td>
                 <td class="text-center"></td>
                 <td class="text-center"><a href="./postgres-1000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppostgres -Dbulk.load.users=1000</code></td>
               </tr>
               <tr>
-                <td>PostgreSQL JSONB 11.1</td>
+                <td>PostgreSQL 11.1 JSONB</td>
                 <td class="text-right">1,000</td>
                 <td class="text-center"><i class="fa fa-check"></i></td>
                 <td class="text-center"></td>
                 <td class="text-center"><a href="./pgjsonb-1000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppgjsonb -Dbulk.load.users=1000</code></td>
               </tr>
               <tr>
                 <td>PostgreSQL 11.1</td>
@@ -124,41 +127,63 @@
                 <td class="text-center"><i class="fa fa-check"></i></td>
                 <td class="text-center"></td>
                 <td class="text-center"><a href="./postgres-10000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppostgres -Dbulk.load.users=10000</code></td>
               </tr>
               <tr>
-                <td>PostgreSQL JSONB 11.1</td>
+                <td>PostgreSQL 11.1</td>
+                <td class="text-right">10,000</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"><a href="./postgres-nodyn-10000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppostgres,nodyn -Dbulk.load.users=10000</code></td>
+              </tr>
+              <tr>
+                <td>PostgreSQL 11.1 JSONB</td>
                 <td class="text-right">10,000</td>
                 <td class="text-center"><i class="fa fa-check"></i></td>
                 <td class="text-center"></td>
                 <td class="text-center"><a href="./pgjsonb-10000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppgjsonb -Dbulk.load.users=10000</code></td>
+              </tr>
+              <tr>
+                <td>PostgreSQL 11.1 JSONB</td>
+                <td class="text-right">10,000</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"><a href="./pgjsonb-nodyn-10000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppgjsonb,nodyn -Dbulk.load.users=10000</code></td>
               </tr>
               <tr>
                 <td>PostgreSQL 11.1</td>
                 <td class="text-right">100,000</td>
                 <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./postgres-100000/index.html"><i class="fa fa-link"></i></a></td>
+                <td class="text-center"><i class="fa fa-check"></i></td>
+                <td class="text-center"><a href="./postgres-nodyn-es-100000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
               </tr>
               <tr>
-                <td>PostgreSQL JSONB 11.1</td>
+                <td>PostgreSQL 11.1 JSONB</td>
                 <td class="text-right">100,000</td>
                 <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./pgjsonb-100000/index.html"><i class="fa fa-link"></i></a></td>
+                <td class="text-center"><i class="fa fa-check"></i></td>
+                <td class="text-center"><a href="./pgjsonb-nodyn-es-100000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
               </tr>
               <tr>
                 <td>PostgreSQL 11.1</td>
                 <td class="text-right">1,000,000</td>
                 <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./postgres-1000000/index.html"><i class="fa fa-link"></i></a></td>
+                <td class="text-center"><i class="fa fa-check"></i></td>
+                <td class="text-center"><a href="./postgres-nodyn-es-1000000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
               </tr>
               <tr>
-                <td>PostgreSQL JSONB 11.1</td>
+                <td>PostgreSQL 11.1 JSONB</td>
                 <td class="text-right">1,000,000</td>
                 <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./pgjsonb-1000000/index.html"><i class="fa fa-link"></i></a></td>
+                <td class="text-center"><i class="fa fa-check"></i></td>
+                <td class="text-center"><a href="./pgjsonb-nodyn-es-1000000/index.html"><i class="fa fa-link"></i></a></td>
+                <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
               </tr>
             </tbody>
           </table>
