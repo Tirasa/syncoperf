@@ -147,16 +147,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <inherited>true</inherited>
-        <configuration>
-          <includes>
-            <include>**/*ITCase.java</include>
-          </includes>
-        </configuration>
-
         <executions>
           <execution>
             <id>verify</id>
             <goals>
+              <goal>integration-test</goal>
               <goal>verify</goal>
             </goals>
           </execution>
