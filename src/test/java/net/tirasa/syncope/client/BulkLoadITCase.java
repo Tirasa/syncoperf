@@ -46,8 +46,12 @@ import org.apache.syncope.common.rest.api.service.UserService;
 import org.apache.syncope.core.spring.security.SecureRandomUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BulkLoadITCase {
+
+    protected static final Logger LOG = LoggerFactory.getLogger(BulkLoadITCase.class);
 
     private static final String ES_REINDEX = "org.apache.syncope.core.provisioning.java.job.ElasticsearchReindex";
 
@@ -191,7 +195,11 @@ public class BulkLoadITCase {
         UserService userService = CLIENT.getService(UserService.class);
 
         for (int i = 0; i < USERS; i++) {
-            userService.create(build(), true);
+            try {
+                userService.create(build(), true);
+            } catch (Exception e) {
+                LOG.error("While creating user {}", i, e);
+            }
         }
     }
 }
