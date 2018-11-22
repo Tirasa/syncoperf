@@ -7,10 +7,11 @@
     <link type="image/vnd.microsoft.icon" href="https://www.tirasa.net/images/favicon.png" rel="shortcut icon">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <!--<link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.5/css/select.dataTables.min.css">-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
       /* Remove the navbar's default margin-bottom and rounded borders */ 
@@ -37,6 +38,12 @@
         padding: 15px;
       }
 
+      #accordion .ui-accordion-header{
+        background-image:none;
+        background-color:#333;
+        color:#fff;
+      }
+
       /* On small screens, set height to 'auto' for sidenav and grid */
       @media screen and (max-width: 767px) {
         .sidenav {
@@ -48,8 +55,28 @@
     </style>
     <script type="text/javascript">
       $(document).ready(function () {
-        $('#results').DataTable({searching: false, paging: false, info: false});
+        $('.table').DataTable({searching: false, paging: false, info: false});
         $('.dataTables_length').addClass('bs-select');
+      });
+
+      $(function () {
+        $("#accordion").accordion({
+          header: "> div > h3",
+          active: false,
+          collapsible: true,
+          heightStyle: "content"
+        }).sortable({
+          axis: "y",
+          handle: "h3",
+          stop: function (event, ui) {
+            // IE doesn't register the blur when sorting
+            // so trigger focusout handlers to remove .ui-state-focus
+            ui.item.children("h3").triggerHandler("focusout");
+
+            // Refresh accordion to handle new order
+            $(this).accordion("refresh");
+          }
+        });
       });
     </script>
   </head>
@@ -93,100 +120,119 @@
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
           <hr>
 
-          <table id="results" class="table table-striped table-hover table-bordered table-sm" style="width: 100%;">
-            <thead>
-              <tr>
-                <th class="th-sm">DBMS</th>
-                <th class="th-sm"># Users</th>
-                <th class="th-sm">Dynamic Memberships</th>
-                <th class="th-sm">Elasticsearch</th>
-                <th class="th-sm">Report</th>
-                <th class="th-sm">Maven args</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>PostgreSQL 11.1</td>
-                <td class="text-right">1,000</td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./postgres-1000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppostgres -Dbulk.load.users=1000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1 JSONB</td>
-                <td class="text-right">1,000</td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./pgjsonb-1000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppgjsonb -Dbulk.load.users=1000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1</td>
-                <td class="text-right">10,000</td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./postgres-10000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppostgres -Dbulk.load.users=10000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1</td>
-                <td class="text-right">10,000</td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./postgres-nodyn-10000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppostgres,nodyn -Dbulk.load.users=10000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1 JSONB</td>
-                <td class="text-right">10,000</td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./pgjsonb-10000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppgjsonb -Dbulk.load.users=10000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1 JSONB</td>
-                <td class="text-right">10,000</td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"><a href="./pgjsonb-nodyn-10000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppgjsonb,nodyn -Dbulk.load.users=10000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1</td>
-                <td class="text-right">100,000</td>
-                <td class="text-center"></td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"><a href="./postgres-nodyn-es-100000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1 JSONB</td>
-                <td class="text-right">100,000</td>
-                <td class="text-center"></td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"><a href="./pgjsonb-nodyn-es-100000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1</td>
-                <td class="text-right">1,000,000</td>
-                <td class="text-center"></td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"><a href="./postgres-nodyn-es-1000000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
-              </tr>
-              <tr>
-                <td>PostgreSQL 11.1 JSONB</td>
-                <td class="text-right">1,000,000</td>
-                <td class="text-center"></td>
-                <td class="text-center"><i class="fa fa-check"></i></td>
-                <td class="text-center"><a href="./pgjsonb-nodyn-es-1000000/index.html"><i class="fa fa-link"></i></a></td>
-                <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
-              </tr>
-            </tbody>
-          </table>
+          <div id="accordion">
+            <div class="group">
+              <h3>PostgreSQL 11.1</h3>
+              <table id="results" class="table table-striped table-hover table-bordered table-sm" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th class="th-sm">Persistence</th>
+                    <th class="th-sm"># Users</th>
+                    <th class="th-sm">Dynamic Memberships</th>
+                    <th class="th-sm">Elasticsearch</th>
+                    <th class="th-sm">Report</th>
+                    <th class="th-sm">Maven args</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">1,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./postgres-1000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres -Dbulk.load.users=1000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
+                    <td class="text-right">1,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./pgjsonb-1000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppgjsonb -Dbulk.load.users=1000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./postgres-10000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./postgres-nodyn-10000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres,nodyn -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./pgjsonb-10000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppgjsonb -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./pgjsonb-nodyn-10000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppgjsonb,nodyn -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">100,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"><a href="./postgres-nodyn-es-100000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
+                    <td class="text-right">100,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"><a href="./pgjsonb-nodyn-es-100000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">1,000,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"><a href="./postgres-nodyn-es-1000000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
+                    <td class="text-right">1,000,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"><a href="./pgjsonb-nodyn-es-1000000/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="group">
+              <h3>MySQL 5.7</h3>
+              <div>
+                <i class="fa fa-gears fa-5x"></i>
+                <p>Coming soon...</p>
+              </div>
+            </div>
+            <div class="group">
+              <h3>MariaDB 10.3</h3>
+              <div>
+                <i class="fa fa-gears fa-5x"></i>
+                <p>Coming soon...</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="col-sm-2 sidenav">
