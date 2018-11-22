@@ -117,9 +117,22 @@
 
           <h1><a href="https://syncope.apache.org" target="_blank">
               <img src="https://syncope.apache.org/images/apache-syncope-logo-medium.png" width="200"/></a>Apache Syncope Performance Reports</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-          <hr>
+          <p>This page reports the results obtained by running the
+            <a href="https://github.com/Tirasa/syncoperf" target="_blank">performance test suite</a> - based on
+            <a href="http://jmeter.apache.org" target="_blank">Apache JMeter</a> - against an Apache Syncope
+            single-node deployment, using different persistence mechanisms, under different DBMSes.</p>
 
+          <h4>Environment</h4>
+          <ul>
+            <li>Apache Syncope 2.1.3-SNAPSHOT</li>
+            <li>Apache Maven 3.6.0</li>
+            <li>Docker CE 5:18.09</li>
+            <li>Oracle JDK 1.8.0_191</li>
+            <li>Ubuntu 18.04</li>
+            <li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes-compute#fs-series-sup1sup" target="_blank">Standard_F4s</a> Azure VM - 4 CPU cores, 8 GB RAM</li>
+          </ul>
+
+          <h4>Reports</h4>
           <div id="accordion">
             <div class="group">
               <h3>PostgreSQL 11.1</h3>
