@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.syncope.client.lib.SyncopeClient;
@@ -73,6 +76,10 @@ public class BulkLoadITCase {
             fail(e.getMessage());
         }
         assertNotNull(USERS);
+
+        // schedule JWT refresh every hour
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(() -> CLIENT.refresh(), 60 * 60, 60 * 60, TimeUnit.SECONDS);
     }
 
     private static ExecTO execTask(
