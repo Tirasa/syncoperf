@@ -22,9 +22,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.syncope.client.lib.SyncopeClient;
@@ -42,6 +39,7 @@ import org.apache.syncope.common.lib.types.ImplementationType;
 import org.apache.syncope.common.lib.types.TaskType;
 import org.apache.syncope.common.rest.api.RESTHeaders;
 import org.apache.syncope.common.rest.api.beans.ExecuteQuery;
+import org.apache.syncope.common.rest.api.service.ConfigurationService;
 import org.apache.syncope.common.rest.api.service.ImplementationService;
 import org.apache.syncope.common.rest.api.service.SyncopeService;
 import org.apache.syncope.common.rest.api.service.TaskService;
@@ -76,10 +74,10 @@ public class BulkLoadITCase {
             fail(e.getMessage());
         }
         assertNotNull(USERS);
-
-        // schedule JWT refresh every hour
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(() -> CLIENT.refresh(), 60 * 60, 60 * 60, TimeUnit.SECONDS);
+        
+        // JWT lasts for 24 hours
+        CLIENT.getService(ConfigurationService.class).
+               set(new AttrTO.Builder().schema("jwt.lifetime.minutes").value("1440").build());
     }
 
     private static ExecTO execTask(
