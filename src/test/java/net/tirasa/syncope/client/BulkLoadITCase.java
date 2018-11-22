@@ -78,6 +78,7 @@ public class BulkLoadITCase {
         // JWT lasts for 24 hours
         CLIENT.getService(ConfigurationService.class).
                set(new AttrTO.Builder().schema("jwt.lifetime.minutes").value("1440").build());
+        CLIENT.refresh();
     }
 
     private static ExecTO execTask(
