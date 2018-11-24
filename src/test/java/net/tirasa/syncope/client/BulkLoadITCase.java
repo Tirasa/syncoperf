@@ -74,10 +74,10 @@ public class BulkLoadITCase {
             fail(e.getMessage());
         }
         assertNotNull(USERS);
-        
+
         // JWT lasts for 24 hours
         CLIENT.getService(ConfigurationService.class).
-               set(new AttrTO.Builder().schema("jwt.lifetime.minutes").value("10080").build());
+                set(new AttrTO.Builder().schema("jwt.lifetime.minutes").value("10080").build());
         CLIENT.refresh();
     }
 
@@ -119,7 +119,9 @@ public class BulkLoadITCase {
 
     @BeforeAll
     public static void elasticsearch() {
-        if (CLIENT.getService(SyncopeService.class).platform().getAnySearchDAO().contains("Elasticsearch")) {
+        if (CLIENT.getService(SyncopeService.class).platform().
+                getPersistenceInfo().getAnySearchDAO().contains("Elasticsearch")) {
+
             try {
                 ImplementationTO reindex = new ImplementationTO();
                 reindex.setKey(ES_REINDEX);
