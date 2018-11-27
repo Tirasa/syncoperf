@@ -22,8 +22,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.SyncopeConstants;
@@ -59,7 +63,13 @@ public class BulkLoadITCase {
     private static final SyncopeClientFactoryBean CLIENT_FACTORY =
             new SyncopeClientFactoryBean().setAddress("http://localhost:9080/syncope/rest/");
 
-    private static final SyncopeClient CLIENT = CLIENT_FACTORY.create("admin", "password");
+    private static final String USERNAME = "admin";
+
+    private static final String PASSWORD = "password";
+
+    private static final SyncopeClient CLIENT = CLIENT_FACTORY.create(USERNAME, PASSWORD);
+
+    private static final int THREADS = 10;
 
     private static Integer USERS;
 
@@ -149,9 +159,9 @@ public class BulkLoadITCase {
         }
     }
 
-    private UserTO build() {
+    private static UserTO build() {
         String username = SecureRandomUtils.generateRandomUUID().toString().substring(0, 8);
-        String uniqueValue = String.valueOf(System.currentTimeMillis());
+        String uniqueValue = String.valueOf(RandomUtils.nextLong());
 
         UserTO user = new UserTO();
         user.setUsername(username);
@@ -200,14 +210,29 @@ public class BulkLoadITCase {
 
     @Test
     public void loadUsers() {
-        UserService userService = CLIENT.getService(UserService.class);
+        ExecutorService executor = Executors.newFixedThreadPool(THREADS);
+        for (int i = 0; i < THREADS; i++) {
+            executor.submit(() -> {
+                UserService userService = CLIENT_FACTORY.create(USERNAME, PASSWORD).getService(UserService.class);
 
-        for (int i = 0; i < USERS; i++) {
-            try {
-                userService.create(build(), true);
-            } catch (Exception e) {
-                LOG.error("While creating user {}", i, e);
+                for (int j = 0; j < USERS / THREADS; j++) {
+                    try {
+                        userService.create(build(), true);
+                    } catch (Exception e) {
+                        LOG.error("While creating user", e);
+                    }
+                }
+            });
+        }
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(7, TimeUnit.DAYS)) {
+                executor.shutdownNow();
             }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 }
