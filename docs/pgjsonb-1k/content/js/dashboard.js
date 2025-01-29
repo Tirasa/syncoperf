@@ -46,6 +46,12 @@ function summaryTableHeader(header) {
 
     cell = document.createElement('th');
     cell.setAttribute("data-sorter", false);
+    cell.colSpan = 1;
+    cell.innerHTML = "Throughput";
+    newRow.appendChild(cell);
+
+    cell = document.createElement('th');
+    cell.setAttribute("data-sorter", false);
     cell.colSpan = 2;
     cell.innerHTML = "Network (KB/sec)";
     newRow.appendChild(cell);
@@ -130,12 +136,12 @@ $(document).ready(function() {
     var data = {"OkPercent": 100.0, "KoPercent": 0.0};
     var dataset = [
         {
-            "label" : "KO",
+            "label" : "FAIL",
             "data" : data.KoPercent,
             "color" : "#FF6347"
         },
         {
-            "label" : "OK",
+            "label" : "PASS",
             "data" : data.OkPercent,
             "color" : "#9ACD32"
         }];
@@ -167,7 +173,7 @@ $(document).ready(function() {
     });
 
     // Creates APDEX table
-    createTable($("#apdexTable"), {"supportsControllersDiscrimination": true, "overall": {"data": [0.8144249512670565, 500, 1500, "Total"], "isController": false}, "titles": ["Apdex", "T (Toleration threshold)", "F (Frustration threshold)", "Label"], "items": [{"data": [1.0, 500, 1500, "Authenticate user"], "isController": false}, {"data": [0.494043321299639, 500, 1500, "Create new user"], "isController": false}, {"data": [0.989643014543852, 500, 1500, "Search existing user"], "isController": false}, {"data": [0.4803835133348027, 500, 1500, "Update existing user"], "isController": false}, {"data": [0.9940410505407195, 500, 1500, "Delete existing user"], "isController": false}, {"data": [0.9998345831495369, 500, 1500, "Read existing user"], "isController": false}]}, function(index, item){
+    createTable($("#apdexTable"), {"supportsControllersDiscrimination": true, "overall": {"data": [1.0, 500, 1500, "Total"], "isController": false}, "titles": ["Apdex", "T (Toleration threshold)", "F (Frustration threshold)", "Label"], "items": [{"data": [1.0, 500, 1500, "Authenticate user"], "isController": false}, {"data": [1.0, 500, 1500, "Create new user"], "isController": false}, {"data": [1.0, 500, 1500, "Search existing user"], "isController": false}, {"data": [1.0, 500, 1500, "Update existing user"], "isController": false}, {"data": [1.0, 500, 1500, "Delete existing user"], "isController": false}, {"data": [1.0, 500, 1500, "Read existing user"], "isController": false}]}, function(index, item){
         switch(index){
             case 0:
                 item = item.toFixed(3);
@@ -181,7 +187,7 @@ $(document).ready(function() {
     }, [[0, 0]], 3);
 
     // Create statistics table
-    createTable($("#statisticsTable"), {"supportsControllersDiscrimination": true, "overall": {"data": ["Total", 28215, 0, 0.0, 461.74105972000746, 9, 4004, 1126.0, 1208.0, 1367.9900000000016, 21.444858250361023, 44.03573341424717, 23.72292093206088], "isController": false}, "titles": ["Label", "#Samples", "KO", "Error %", "Average", "Min", "Max", "90th pct", "95th pct", "99th pct", "Throughput", "Received", "Sent"], "items": [{"data": ["Authenticate user", 1, 0, 0.0, 482.0, 482, 482, 482.0, 482.0, 482.0, 2.074688796680498, 0.9056502852697096, 0.5997147302904564], "isController": false}, {"data": ["Create new user", 5540, 0, 0.0, 924.7752707581233, 179, 4004, 1094.0, 1209.0, 1654.5900000000001, 4.212687489306694, 10.164537312510692, 12.579427504134745], "isController": false}, {"data": ["Search existing user", 4538, 0, 0.0, 188.27941824592298, 43, 903, 309.0999999999999, 405.0500000000002, 559.2199999999993, 3.7820858478481365, 8.67959724260064, 2.4125606864135776], "isController": false}, {"data": ["Update existing user", 4537, 0, 0.0, 1176.9356402909414, 308, 2576, 1355.0, 1462.0, 1743.2399999999998, 3.780219047738076, 8.648371657834769, 3.484889434633539], "isController": false}, {"data": ["Delete existing user", 4531, 0, 0.0, 274.744427278747, 86, 1210, 349.0, 385.39999999999964, 530.3600000000006, 3.7778355861940165, 3.2318202866269123, 2.3500793636773323], "isController": false}, {"data": ["Read existing user", 9068, 0, 0.0, 51.30690339655925, 9, 691, 96.0, 111.0, 152.0, 7.5590351643514975, 16.58855223855558, 3.978886691788427], "isController": false}]}, function(index, item){
+    createTable($("#statisticsTable"), {"supportsControllersDiscrimination": true, "overall": {"data": ["Total", 360024, 0, 0.0, 33.08119736462082, 2, 211, 28.0, 72.0, 89.0, 98.0, 297.4728883931338, 655.5991907185349, 296.0301337441387], "isController": false}, "titles": ["Label", "#Samples", "FAIL", "Error %", "Average", "Min", "Max", "Median", "90th pct", "95th pct", "99th pct", "Transactions/s", "Received", "Sent"], "items": [{"data": ["Authenticate user", 1, 0, 0.0, 37.0, 37, 37, 37.0, 37.0, 37.0, 37.0, 27.027027027027028, 12.959248310810812, 7.759712837837839], "isController": false}, {"data": ["Create new user", 60259, 0, 0.0, 52.17338488856454, 17, 192, 58.0, 67.0, 69.0, 74.0, 49.79181453935197, 128.03199417057988, 140.9823160428505], "isController": false}, {"data": ["Search existing user", 59955, 0, 0.0, 45.86683345842695, 29, 136, 46.0, 52.0, 53.0, 58.0, 49.965581210841336, 122.22111037342096, 30.994539096838057], "isController": false}, {"data": ["Update existing user", 59955, 0, 0.0, 71.77699941622859, 19, 211, 84.0, 96.0, 99.0, 106.0, 49.96683045863975, 121.69640965237821, 44.355321178616734], "isController": false}, {"data": ["Delete existing user", 59949, 0, 0.0, 18.04407079350764, 8, 127, 18.0, 22.0, 23.0, 27.0, 49.968534718083575, 48.476427867404055, 30.20558885790404], "isController": false}, {"data": ["Read existing user", 119905, 0, 0.0, 5.2625995579834335, 2, 114, 5.0, 7.0, 7.0, 8.0, 99.92999358274508, 239.74688402426472, 50.84339192681204], "isController": false}]}, function(index, item){
         switch(index){
             // Errors pct
             case 3:
@@ -191,16 +197,18 @@ $(document).ready(function() {
             case 4:
             // Mean
             case 7:
-            // Percentile 1
+            // Median
             case 8:
-            // Percentile 2
+            // Percentile 1
             case 9:
-            // Percentile 3
+            // Percentile 2
             case 10:
-            // Throughput
+            // Percentile 3
             case 11:
-            // Kbytes/s
+            // Throughput
             case 12:
+            // Kbytes/s
+            case 13:
             // Sent Kbytes/s
                 item = item.toFixed(2);
                 break;
@@ -220,7 +228,7 @@ $(document).ready(function() {
     }, [[1, 1]]);
 
         // Create top5 errors by sampler
-    createTable($("#top5ErrorsBySamplerTable"), {"supportsControllersDiscrimination": false, "overall": {"data": ["Total", 28215, 0, null, null, null, null, null, null, null, null, null, null], "isController": false}, "titles": ["Sample", "#Samples", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors"], "items": [{"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}]}, function(index, item){
+    createTable($("#top5ErrorsBySamplerTable"), {"supportsControllersDiscrimination": false, "overall": {"data": ["Total", 360024, 0, "", "", "", "", "", "", "", "", "", ""], "isController": false}, "titles": ["Sample", "#Samples", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors", "Error", "#Errors"], "items": [{"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}, {"data": [], "isController": false}]}, function(index, item){
         return item;
     }, [[0, 0]], 0);
 

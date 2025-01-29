@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.syncope</groupId>
     <artifactId>syncope</artifactId>
-    <version>2.1.9-SNAPSHOT</version>
+    <version>3.0.10</version>
   </parent>
 
   <name>Apache Syncope Performance Tools</name>
@@ -32,7 +32,7 @@
   <packaging>war</packaging>
 
   <properties>
-    <syncope.version>2.1.9-SNAPSHOT</syncope.version>
+    <syncope.version>3.0.10</syncope.version>
 
     <bulk.load.users>1000</bulk.load.users>
 
@@ -44,82 +44,62 @@
 
     <secretKey>sadfaffdasfadfasdafds</secretKey>
     <anonymousKey>adsfsdfadsfasdf</anonymousKey>
-    <jwsKey>asdfasdfasdfdasfsd</jwsKey>
+    <jwsKey>MFgC6p0bM3iNikJmCh4BEtRHl7tkWGdffozqBkYfPZtBqHDltHsQkIE0YNzGOG6E</jwsKey>
     <adminPassword>DE088591C00CC98B36F5ADAAF7DA2B004CF7F2FE7BBB45B766B6409876E2F3DB13C7905C6AA59464</adminPassword>
 
+    <ianal.phase>none</ianal.phase>
     <rat.skip>true</rat.skip>
     <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>
-    <dependency> 
-      <groupId>javax.servlet</groupId> 
-      <artifactId>javax.servlet-api</artifactId> 
-    </dependency>
     <dependency>
-      <groupId>javax.servlet.jsp</groupId>
-      <artifactId>javax.servlet.jsp-api</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-    </dependency>
-    
+ 
     <dependency>
       <groupId>org.apache.syncope.core</groupId>
-      <artifactId>syncope-core-rest-cxf</artifactId>
-      <version>${syncope.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.syncope.core</groupId>
-      <artifactId>syncope-core-workflow-java</artifactId>
-      <version>${syncope.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.syncope.core</groupId>
-      <artifactId>syncope-core-persistence-jpa</artifactId>
+      <artifactId>syncope-core-self-keymaster-starter</artifactId>
       <version>${syncope.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>org.apache.syncope.core</groupId>
+      <artifactId>syncope-core-starter</artifactId>
+      <version>${syncope.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
+      <groupId>org.apache.syncope.core.idm</groupId>
+      <artifactId>syncope-core-idm-rest-cxf</artifactId>
+      <version>${syncope.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
+      <groupId>org.apache.syncope.core.am</groupId>
+      <artifactId>syncope-core-am-rest-cxf</artifactId>
+      <version>${syncope.version}</version>
     </dependency>
+
     <dependency>
-      <groupId>com.lmax</groupId>
-      <artifactId>disruptor</artifactId>
+      <groupId>org.apache.syncope.core</groupId>
+      <artifactId>syncope-core-persistence-jpa-json</artifactId>
+      <version>${syncope.version}</version>
     </dependency>
+
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.syncope.client</groupId>
-      <artifactId>syncope-client-lib</artifactId>
+      <groupId>org.apache.syncope.client.idrepo</groupId>
+      <artifactId>syncope-client-idrepo-lib</artifactId>
       <version>${syncope.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -157,17 +137,13 @@
           </execution>
         </executions>
       </plugin>
-
-      <plugin> 
+  
+      <plugin>
         <groupId>com.lazerycode.jmeter</groupId> 
         <artifactId>jmeter-maven-plugin</artifactId> 
-        <version>3.2.0</version>
+        <version>3.8.0</version>
         <configuration>
           <testFilesIncluded>
-            <!--<jMeterTestFile>create_delete.jmx</jMeterTestFile>-->
-            <!--<jMeterTestFile>create_read_delete.jmx</jMeterTestFile>-->
-            <!--<jMeterTestFile>create_search_delete.jmx</jMeterTestFile>-->
-            <!--<jMeterTestFile>create_update_delete.jmx</jMeterTestFile>-->
             <jMeterTestFile>heterogeneous.jmx</jMeterTestFile>
           </testFilesIncluded>
           <propertiesUser>
@@ -180,6 +156,12 @@
         </configuration>
         <executions>
           <execution>
+            <id>configuration</id>
+            <goals>
+              <goal>configure</goal>
+            </goals>
+          </execution>
+          <execution>
             <id>jmeter-tests</id>
             <goals>
               <goal>jmeter</goal>
@@ -189,52 +171,32 @@
       </plugin>
 
       <plugin>
-        <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven2-plugin</artifactId>
-        <inherited>true</inherited>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <container>
-            <dependencies>
-              <dependency>
-                <groupId>${jdbcdriver.groupId}</groupId>
-                <artifactId>${jdbcdriver.artifactId}</artifactId>
-              </dependency>
-            </dependencies>
-          </container>
-          <configuration>
-            <type>standalone</type>
-            <properties>
-              <cargo.servlet.port>${cargo.servlet.port}</cargo.servlet.port>
-              <cargo.tomcat.ajp.port>${cargo.tomcat.ajp.port}</cargo.tomcat.ajp.port>
-              <cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
-
-              <cargo.jvmargs>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server
-                -Xms2048m -Xmx2048m -XX:NewSize=256m -XX:MaxNewSize=256m
-                -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+CMSIncrementalMode
-                -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=60
-                -XX:+ScavengeBeforeFullGC -XX:+CMSScavengeBeforeRemark
-                -Djava.security.egd=file:/dev/./urandom</cargo.jvmargs>
-            </properties>
-          </configuration>
-          <deployables>
-            <deployable>
-              <location>${project.build.directory}/${project.build.finalName}</location>
-              <pingURL>http://localhost:${cargo.servlet.port}/syncope/cacheStats.jsp</pingURL>
-              <pingTimeout>60000</pingTimeout>
-              <properties>
-                <context>syncope</context>
-              </properties>
-            </deployable>
-          </deployables>
+          <mainClass>org.apache.syncope.core.starter.SyncopeCoreApplication</mainClass>
+          <systemPropertyVariables>
+            <syncope.conf.dir>${project.build.directory}/test-classes</syncope.conf.dir>
+            <syncope.connid.location>file:${bundles.directory}/</syncope.connid.location>
+            <syncope.log.dir>${project.build.directory}/log</syncope.log.dir>            
+          </systemPropertyVariables>              
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>ianal-maven-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
+        <executions>
+          <execution>
+            <id>start-syncope</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-syncope</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
@@ -248,11 +210,6 @@
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-      <testResource>
-        <directory>src/main/resources/domains</directory>
-        <targetPath>${project.build.directory}/test-classes/domains</targetPath>
         <filtering>true</filtering>
       </testResource>
     </testResources>
@@ -361,23 +318,11 @@
     <profile>
       <id>pgjsonb</id>
 
-      <properties>
-        <jdbcdriver.groupId>org.postgresql</jdbcdriver.groupId>
-        <jdbcdriver.artifactId>postgresql</jdbcdriver.artifactId>
-      </properties>
-
       <dependencies>
-        <dependency>
-          <groupId>org.apache.syncope.core</groupId>
-          <artifactId>syncope-core-persistence-jpa-json</artifactId>
-          <version>${syncope.version}</version>
-        </dependency>
-
         <dependency>
           <groupId>org.postgresql</groupId>
           <artifactId>postgresql</artifactId>
           <version>${jdbc.postgresql.version}</version>
-          <scope>test</scope>
         </dependency>
       </dependencies>
 
@@ -391,20 +336,7 @@
             <configuration>
               <images>
                 <image>
-                  <name>docker.elastic.co/elasticsearch/elasticsearch:${elasticsearch.version}</name>
-                  <run>
-                    <env>
-                      <discovery.type>single-node</discovery.type>
-                      <cluster.name>elasticsearch</cluster.name>
-                      <xpack.security.enabled>false</xpack.security.enabled>
-                    </env>
-                    <ports>
-                      <port>9200:9200</port>
-                      <port>9300:9300</port>
-                    </ports>
-                  </run>
-                </image>
-                <image>
+                  <alias>postgres</alias>
                   <name>postgres:${docker.postgresql.version}</name>
                   <run>
                     <env>
@@ -412,142 +344,13 @@
                       <POSTGRES_USER>syncope</POSTGRES_USER>
                       <POSTGRES_PASSWORD>syncope</POSTGRES_PASSWORD>
                     </env>
-                    <ports>
-                      <port>5432:5432</port>
-                    </ports>
-                  </run>
-                </image>
-              </images>
-            </configuration>
-            <executions>
-              <execution>
-                <id>start-postgres</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>stop-postgres</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>stop</goal>
-                  <goal>remove</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          
-          <plugin>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <inherited>true</inherited>
-            <executions>
-              <execution>
-                <id>start-container</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>stop-container</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>stop</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-            <excludes>
-              <exclude>persistence.properties</exclude>
-              <exclude>provisioning.properties</exclude>
-              <exclude>indexes.xml</exclude>
-              <exclude>views.xml</exclude>
-            </excludes>
-          </resource>
-          <resource>
-            <directory>src/main/resources/pgjsonb</directory>
-            <filtering>true</filtering>
-          </resource>
-        </resources>
-        <testResources>
-          <testResource>
-            <directory>src/main/resources/pgjsonb</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>persistence.properties</include>
-              <include>provisioning.properties</include>
-              <include>indexes.xml</include>
-              <include>views.xml</include>
-            </includes>            
-          </testResource>
-          <testResource>
-            <directory>src/main/resources/pgjsonb/domains</directory>
-            <targetPath>${project.build.directory}/test-classes/domains</targetPath>
-            <filtering>true</filtering>
-          </testResource>
-        </testResources>
-      </build>
-    </profile>
-
-    <profile>
-      <id>postgres</id>
-
-      <properties>
-        <jdbcdriver.groupId>org.postgresql</jdbcdriver.groupId>
-        <jdbcdriver.artifactId>postgresql</jdbcdriver.artifactId>
-      </properties>
-
-      <dependencies>
-        <dependency>
-          <groupId>org.postgresql</groupId>
-          <artifactId>postgresql</artifactId>
-          <version>${jdbc.postgresql.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-
-      <build>
-        <defaultGoal>clean verify</defaultGoal>
-
-        <plugins>
-          <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>docker-maven-plugin</artifactId>
-            <configuration>
-              <images>
-                <image>
-                  <name>docker.elastic.co/elasticsearch/elasticsearch:${elasticsearch.version}</name>
-                  <run>
-                    <env>
-                      <discovery.type>single-node</discovery.type>
-                      <cluster.name>elasticsearch</cluster.name>
-                      <xpack.security.enabled>false</xpack.security.enabled>
-                    </env>
-                    <ports>
-                      <port>9200:9200</port>
-                      <port>9300:9300</port>
-                    </ports>
-                  </run>
-                </image>
-                <image>
-                  <name>postgres:${docker.postgresql.version}</name>
-                  <run>
-                    <env>
-                      <POSTGRES_DB>syncope</POSTGRES_DB>
-                      <POSTGRES_USER>syncope</POSTGRES_USER>
-                      <POSTGRES_PASSWORD>syncope</POSTGRES_PASSWORD>
-                    </env>
-                    <ports>
-                      <port>5432:5432</port>
-                    </ports>
+                    <wait>
+                      <log>database system is ready to accept connections</log>
+                      <time>30000</time>
+                    </wait>
+                    <tmpfs>
+                      <mount>/var/lib/postgresql/data:rw</mount>
+                    </tmpfs>
                   </run>
                 </image>
               </images>
@@ -572,69 +375,24 @@
           </plugin>
 
           <plugin>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <inherited>true</inherited>
-            <executions>
-              <execution>
-                <id>start-container</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>stop-container</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>stop</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <profiles>
+                <profile>syncoperf</profile>
+                <profile>pgjsonb</profile>
+              </profiles>
+              <systemPropertyVariables>
+                <DB_CONTAINER_IP>${docker.container.postgres.ip}</DB_CONTAINER_IP>
+              </systemPropertyVariables>              
+            </configuration>
+          </plugin>  
         </plugins>
-
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-            <excludes>
-              <exclude>persistence.properties</exclude>
-              <exclude>provisioning.properties</exclude>
-              <exclude>views.xml</exclude>
-            </excludes>
-          </resource>
-          <resource>
-            <directory>src/main/resources/postgres</directory>
-            <filtering>true</filtering>
-          </resource>
-        </resources>
-        <testResources>
-          <testResource>
-            <directory>src/main/resources/postgres</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>persistence.properties</include>
-              <include>provisioning.properties</include>
-              <include>views.xml</include>
-            </includes>    
-          </testResource>
-          <testResource>
-            <directory>src/main/resources/postgres/domains</directory>
-            <targetPath>${project.build.directory}/test-classes/domains</targetPath>
-            <filtering>true</filtering>
-          </testResource>
-        </testResources>
       </build>
     </profile>
 
     <profile>
       <id>mariadb</id>
-
-      <properties>
-        <jdbcdriver.groupId>org.mariadb.jdbc</jdbcdriver.groupId>
-        <jdbcdriver.artifactId>mariadb-java-client</jdbcdriver.artifactId>
-      </properties>
 
       <dependencies>
         <dependency>

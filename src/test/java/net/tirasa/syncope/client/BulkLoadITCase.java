@@ -15,37 +15,31 @@
  */
 package net.tirasa.syncope.client;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import javax.ws.rs.core.Response;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
+import org.apache.syncope.common.lib.Attr;
 import org.apache.syncope.common.lib.SyncopeConstants;
-import org.apache.syncope.common.lib.to.AttrTO;
+import org.apache.syncope.common.lib.request.UserCR;
 import org.apache.syncope.common.lib.to.ExecTO;
-import org.apache.syncope.common.lib.to.ImplementationTO;
 import org.apache.syncope.common.lib.to.MembershipTO;
-import org.apache.syncope.common.lib.to.SchedTaskTO;
 import org.apache.syncope.common.lib.to.TaskTO;
-import org.apache.syncope.common.lib.to.UserTO;
-import org.apache.syncope.common.lib.types.ImplementationEngine;
-import org.apache.syncope.common.lib.types.ImplementationType;
 import org.apache.syncope.common.lib.types.TaskType;
-import org.apache.syncope.common.rest.api.RESTHeaders;
-import org.apache.syncope.common.rest.api.beans.ExecuteQuery;
-import org.apache.syncope.common.rest.api.service.ConfigurationService;
-import org.apache.syncope.common.rest.api.service.ImplementationService;
-import org.apache.syncope.common.rest.api.service.SyncopeService;
+import org.apache.syncope.common.rest.api.beans.ExecSpecs;
 import org.apache.syncope.common.rest.api.service.TaskService;
 import org.apache.syncope.common.rest.api.service.UserService;
 import org.apache.syncope.core.spring.security.SecureRandomUtils;
@@ -58,23 +52,23 @@ public class BulkLoadITCase {
 
     protected static final Logger LOG = LoggerFactory.getLogger(BulkLoadITCase.class);
 
-    private static final String ES_REINDEX = "org.apache.syncope.core.provisioning.java.job.ElasticsearchReindex";
-
     private static final SyncopeClientFactoryBean CLIENT_FACTORY =
             new SyncopeClientFactoryBean().setAddress("http://localhost:9080/syncope/rest/");
 
-    private static final String USERNAME = "admin";
+    protected static final String ADMIN_UNAME = "admin";
 
-    private static final String PASSWORD = "password";
+    protected static final String ADMIN_PWD = "password";
 
-    private static final SyncopeClient CLIENT = CLIENT_FACTORY.create(USERNAME, PASSWORD);
+    protected static SyncopeClient ADMIN_CLIENT;
+
+    protected static TaskService TASK_SERVICE;
 
     private static final int THREADS = 10;
 
     private static Integer USERS;
 
     @BeforeAll
-    public static void install() {
+    public static void setup() {
         Properties props = new Properties();
         try (InputStream propStream = BulkLoadITCase.class.getResourceAsStream("/bulkLoad.properties")) {
             props.load(propStream);
@@ -85,124 +79,70 @@ public class BulkLoadITCase {
         }
         assertNotNull(USERS);
 
-        // JWT lasts for 24 hours
-        CLIENT.getService(ConfigurationService.class).
-                set(new AttrTO.Builder().schema("jwt.lifetime.minutes").value("10080").build());
-        CLIENT.refresh();
+        ADMIN_CLIENT = CLIENT_FACTORY.create(ADMIN_UNAME, ADMIN_PWD);
+        TASK_SERVICE = ADMIN_CLIENT.getService(TaskService.class);
     }
 
-    private static ExecTO execTask(
-            final TaskService taskService, final TaskType type, final String taskKey,
-            final String initialStatus, final int maxWaitSeconds, final boolean dryRun) {
+    protected static ExecTO execTask(
+            final TaskType type,
+            final String taskKey,
+            final String initialStatus,
+            final int maxWaitSeconds,
+            final boolean dryRun) {
 
-        TaskTO taskTO = taskService.read(type, taskKey, true);
-        assertNotNull(taskTO);
-        assertNotNull(taskTO.getExecutions());
+        AtomicReference<TaskTO> taskTO = new AtomicReference<>(TASK_SERVICE.read(type, taskKey, true));
+        int preSyncSize = taskTO.get().getExecutions().size();
+        ExecTO execution = TASK_SERVICE.execute(new ExecSpecs.Builder().key(taskKey).dryRun(dryRun).build());
+        Optional.ofNullable(initialStatus).ifPresent(status -> assertEquals(status, execution.getStatus()));
+        assertNotNull(execution.getExecutor());
 
-        int preSyncSize = taskTO.getExecutions().size();
-        ExecTO execution = taskService.execute(
-                new ExecuteQuery.Builder().key(taskTO.getKey()).dryRun(dryRun).build());
-        assertEquals(initialStatus, execution.getStatus());
-
-        int i = 0;
-        int maxit = maxWaitSeconds;
-
-        // wait for completion (executions incremented)
-        do {
+        await().atMost(maxWaitSeconds, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> {
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-
-            taskTO = taskService.read(type, taskTO.getKey(), true);
-
-            assertNotNull(taskTO);
-            assertNotNull(taskTO.getExecutions());
-
-            i++;
-        } while (preSyncSize == taskTO.getExecutions().size() && i < maxit);
-        if (i == maxit) {
-            fail("Timeout when executing task " + taskKey);
-        }
-        return taskTO.getExecutions().get(taskTO.getExecutions().size() - 1);
-    }
-
-    @BeforeAll
-    public static void elasticsearch() {
-        if (CLIENT.getService(SyncopeService.class).platform().
-                getPersistenceInfo().getAnySearchDAO().contains("Elasticsearch")) {
-
-            try {
-                ImplementationTO reindex = new ImplementationTO();
-                reindex.setKey(ES_REINDEX);
-                reindex.setEngine(ImplementationEngine.JAVA);
-                reindex.setType(ImplementationType.TASKJOB_DELEGATE);
-                reindex.setBody(ES_REINDEX);
-                CLIENT.getService(ImplementationService.class).create(reindex);
-
-                SchedTaskTO task = new SchedTaskTO();
-                task.setJobDelegate(reindex.getKey());
-                task.setName("Elasticsearch Reindex");
-                Response response = CLIENT.getService(TaskService.class).create(TaskType.SCHEDULED, task);
-                String taskKey = response.getHeaderString(RESTHeaders.RESOURCE_KEY);
-
-                execTask(
-                        CLIENT.getService(TaskService.class),
-                        TaskType.SCHEDULED,
-                        taskKey,
-                        "JOB_FIRED",
-                        60,
-                        false);
+                taskTO.set(TASK_SERVICE.read(type, taskKey, true));
+                return preSyncSize < taskTO.get().getExecutions().size();
             } catch (Exception e) {
-                fail("Could not initialize Elasticsearch", e);
+                return false;
             }
-        }
+        });
+
+        return taskTO.get().getExecutions().get(taskTO.get().getExecutions().size() - 1);
     }
 
-    private static UserTO build() {
-        String username = SecureRandomUtils.generateRandomUUID().toString().substring(0, 8);
-        String uniqueValue = String.valueOf(RandomUtils.nextLong());
+    private static UserCR build() {
+        String username = SecureRandomUtils.generateRandomUUID().toString();
+        String uniqueValue = String.valueOf(RandomUtils.secure().randomLong());
 
-        UserTO user = new UserTO();
+        UserCR user = new UserCR();
         user.setUsername(username);
         user.setPassword("password123");
         user.setRealm(SyncopeConstants.ROOT_REALM);
 
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("email").value(username + "@syncope.apache.org").build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("firstname").value("fn_" + username).build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("surname").value("sn_" + username).build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("address").
-                value("Viale G. D'Annunzio, 267 - 65127 Pescara - Italy").
+        user.getPlainAttrs().add(new Attr.Builder("email").value(username + "@syncope.apache.org").build());
+        user.getPlainAttrs().add(new Attr.Builder("firstname").value("fn_" + username).build());
+        user.getPlainAttrs().add(new Attr.Builder("surname").value("sn_" + username).build());
+        user.getPlainAttrs().add(new Attr.Builder("address").
+                value("Viale Vittoria Colonna, 97 - 65127 Pescara - Italy").
                 value("Via Papa Giovanni XXIII, 8 - 66010 Miglianico (CH) - Italy").build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("birth place").value("Colle Corvino").build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("SSN").value(uniqueValue).build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("gender").value("F").build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("user type").
-                value("Type " + RandomStringUtils.random(1, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J')).build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("mobile").value(uniqueValue).build());
-        user.getPlainAttrs().add(new AttrTO.Builder().
-                schema("birthday").value("1977-09-08").build());
+        user.getPlainAttrs().add(new Attr.Builder("birth place").value("Colle Corvino").build());
+        user.getPlainAttrs().add(new Attr.Builder("SSN").value(uniqueValue).build());
+        user.getPlainAttrs().add(new Attr.Builder("gender").value("F").build());
+        user.getPlainAttrs().add(new Attr.Builder("user type").
+                value("Type " + RandomStringUtils.secure().next(
+                        1, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J')).build());
+        user.getPlainAttrs().add(new Attr.Builder("mobile").value(uniqueValue).build());
+        user.getPlainAttrs().add(new Attr.Builder("birthday").value("1977-09-08").build());
 
-        user.getMemberships().add(new MembershipTO.Builder().group("e458f315-975e-4270-98f3-15975ea27057").build());
+        user.getMemberships().add(new MembershipTO.Builder("e458f315-975e-4270-98f3-15975ea27057").build());
 
-        MembershipTO membership = new MembershipTO.Builder().group("54b85719-91db-4917-b857-1991dbd91707").build();
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("recruitment").value("2017-05-11").build());
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("contract start").value("2017-05-11").build());
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("qualification").value("Qualification").build());
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("badge").value(uniqueValue).build());
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("institution").value("Institution").build());
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("organization").value("Organization").build());
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("contract level").value("Contract Level").build());
-        membership.getPlainAttrs().add(new AttrTO.Builder().schema("id number").value(uniqueValue).build());
+        MembershipTO membership = new MembershipTO.Builder("54b85719-91db-4917-b857-1991dbd91707").build();
+        membership.getPlainAttrs().add(new Attr.Builder("recruitment").value("2017-05-11").build());
+        membership.getPlainAttrs().add(new Attr.Builder("contract start").value("2017-05-11").build());
+        membership.getPlainAttrs().add(new Attr.Builder("qualification").value("Qualification").build());
+        membership.getPlainAttrs().add(new Attr.Builder("badge").value(uniqueValue).build());
+        membership.getPlainAttrs().add(new Attr.Builder("institution").value("Institution").build());
+        membership.getPlainAttrs().add(new Attr.Builder("organization").value("Organization").build());
+        membership.getPlainAttrs().add(new Attr.Builder("contract level").value("Contract Level").build());
+        membership.getPlainAttrs().add(new Attr.Builder("id number").value(uniqueValue).build());
         user.getMemberships().add(membership);
 
         return user;
@@ -213,11 +153,11 @@ public class BulkLoadITCase {
         ExecutorService executor = Executors.newFixedThreadPool(THREADS);
         for (int i = 0; i < THREADS; i++) {
             executor.submit(() -> {
-                UserService userService = CLIENT_FACTORY.create(USERNAME, PASSWORD).getService(UserService.class);
+                UserService userService = ADMIN_CLIENT.getService(UserService.class);
 
                 for (int j = 0; j < USERS / THREADS; j++) {
                     try {
-                        userService.create(build(), true);
+                        userService.create(build());
                     } catch (Exception e) {
                         LOG.error("While creating user", e);
                     }

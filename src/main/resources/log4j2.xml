@@ -20,9 +20,20 @@ under the License.
 <configuration status="WARN">
 
   <appenders>
-    
-    <RollingRandomAccessFile name="mainFile" fileName="${log.directory}/core.log"
-                             filePattern="${log.directory}/core-%d{yyyy-MM-dd}.log.gz"
+    <RollingRandomAccessFile name="main" fileName="${sys:syncope.log.dir}/core.log"
+                             filePattern="${sys:syncope.log.dir}/core-%d{yyyy-MM-dd}.log.gz"
+                             immediateFlush="false" append="true">
+      <PatternLayout>
+        <pattern>%d{HH:mm:ss.SSS} %notEmpty{[operation.id=%X{operation.id}] }%-5level %logger - %msg%n</pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+        <SizeBasedTriggeringPolicy size="250 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile name="persistence" fileName="${sys:syncope.log.dir}/core-persistence.log"
+                             filePattern="${sys:syncope.log.dir}/core-persistence-%d{yyyy-MM-dd}.log.gz"
                              immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
@@ -32,10 +43,9 @@ under the License.
         <SizeBasedTriggeringPolicy size="250 MB"/>
       </Policies>
     </RollingRandomAccessFile>
-    <Memory name="main" size="25"/>
 
-    <RollingRandomAccessFile name="persistenceFile" fileName="${log.directory}/core-persistence.log"
-                             filePattern="${log.directory}/core-persistence-%d{yyyy-MM-dd}.log.gz"
+    <RollingRandomAccessFile name="rest" fileName="${sys:syncope.log.dir}/core-rest.log"
+                             filePattern="${sys:syncope.log.dir}/core-rest-%d{yyyy-MM-dd}.log.gz"
                              immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
@@ -45,23 +55,9 @@ under the License.
         <SizeBasedTriggeringPolicy size="250 MB"/>
       </Policies>
     </RollingRandomAccessFile>
-    <Memory name="persistence" size="25"/>
 
-    <RollingRandomAccessFile name="restFile" fileName="${log.directory}/core-rest.log"
-                             filePattern="${log.directory}/core-rest-%d{yyyy-MM-dd}.log.gz"
-                             immediateFlush="false" append="true">
-      <PatternLayout>
-        <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
-      </PatternLayout>
-      <Policies>
-        <TimeBasedTriggeringPolicy/>
-        <SizeBasedTriggeringPolicy size="250 MB"/>
-      </Policies>
-    </RollingRandomAccessFile>
-    <Memory name="rest" size="25"/>
-
-    <RollingRandomAccessFile name="connidFile" fileName="${log.directory}/core-connid.log"
-                             filePattern="${log.directory}/core-connid-%d{yyyy-MM-dd}.log.gz"
+    <RollingRandomAccessFile name="connid" fileName="${sys:syncope.log.dir}/core-connid.log"
+                             filePattern="${sys:syncope.log.dir}/core-connid-%d{yyyy-MM-dd}.log.gz"
                              immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
@@ -71,136 +67,120 @@ under the License.
         <SizeBasedTriggeringPolicy size="250 MB"/>
       </Policies>
     </RollingRandomAccessFile>
-    <Memory name="connid" size="25"/>
     
   </appenders>
   
   <loggers>
-
-    <asyncLogger name="org.apache.syncope.core.persistence" additivity="false" level="ERROR">
-      <appender-ref ref="persistenceFile"/>
+    
+    <asyncLogger name="org.apache.syncope.core.persistence" additivity="false" level="INFO">
       <appender-ref ref="persistence"/>
     </asyncLogger>
-    <asyncLogger name="org.springframework.orm" additivity="false" level="ERROR">
-      <appender-ref ref="persistenceFile"/>
+    <asyncLogger name="org.springframework.orm" additivity="false" level="INFO">
       <appender-ref ref="persistence"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.ibatis" additivity="false" level="ERROR">
-      <appender-ref ref="persistenceFile"/>
+    <asyncLogger name="org.apache.openjpa" additivity="false" level="INFO">
+      <appender-ref ref="persistence"/>
+    </asyncLogger>
+    <asyncLogger name="org.apache.ibatis" additivity="false" level="INFO">
       <appender-ref ref="persistence"/>
     </asyncLogger>
     
-    <asyncLogger name="org.apache.syncope.core.rest" additivity="false" level="ERROR">
-      <appender-ref ref="restFile"/>
+    <asyncLogger name="org.apache.syncope.core.rest" additivity="false" level="INFO">
       <appender-ref ref="rest"/>
     </asyncLogger>
-    <asyncLogger name="org.springframework.web" additivity="false" level="ERROR">
-      <appender-ref ref="restFile"/>
+    <asyncLogger name="org.springframework.web" additivity="false" level="INFO">
       <appender-ref ref="rest"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.http" additivity="false" level="ERROR">
-      <appender-ref ref="restFile"/>
+    <asyncLogger name="org.apache.http" additivity="false" level="INFO">
       <appender-ref ref="rest"/>
     </asyncLogger>
     <asyncLogger name="org.apache.cxf" additivity="false" level="ERROR">
-      <appender-ref ref="restFile"/>
+      <appender-ref ref="rest"/>
+    </asyncLogger>
+    <asyncLogger name="org.apache.syncope.ext.self.keymaster" additivity="false" level="ERROR">
       <appender-ref ref="rest"/>
     </asyncLogger>
     
-    <asyncLogger name="org.identityconnectors" additivity="false" level="ERROR">
-      <appender-ref ref="connidFile"/>
+    <asyncLogger name="org.identityconnectors" additivity="false" level="DEBUG">
       <appender-ref ref="connid"/>
     </asyncLogger>
-    <asyncLogger name="net.tirasa.connid" additivity="false" level="ERROR">
-      <appender-ref ref="connidFile"/>
+    <asyncLogger name="net.tirasa.connid" additivity="false" level="DEBUG">
       <appender-ref ref="connid"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.syncope.core.provisioning.api.ConnIdBundleManager" additivity="false" level="ERROR">
-      <appender-ref ref="connidFile"/>
+    <asyncLogger name="org.apache.syncope.core.provisioning.api.ConnIdBundleManager" additivity="false" level="INFO">
       <appender-ref ref="connid"/>
     </asyncLogger>
     
-    <asyncLogger name="org.apache.syncope" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <asyncLogger name="org.apache.syncope" additivity="false" level="INFO">
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.syncope.core.provisioning" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <asyncLogger name="org.apache.syncope.core.provisioning" additivity="false" level="INFO">
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.syncope.core.logic" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <asyncLogger name="org.apache.syncope.core.logic" additivity="false" level="INFO">
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.springframework" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <asyncLogger name="org.springframework" additivity="false" level="INFO">
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.quartz" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <asyncLogger name="org.quartz" additivity="false" level="INFO">
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="org.flowable" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.apache.cocoon" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <asyncLogger name="liquibase" additivity="false" level="ERROR">
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="org.apache.fop" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
-      <appender-ref ref="main"/>
-    </asyncLogger>
-    <asyncLogger name="org.apache.camel" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="org.apache.wss4j" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="org.apache.xml" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+      <appender-ref ref="main"/>
+    </asyncLogger>
+    <asyncLogger name="org.apache.bval" additivity="false" level="ERROR">
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="org.opensaml" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="io.swagger" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="org.reflections" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
-    <asyncLogger name="org.elasticsearch" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <asyncLogger name="org.elasticsearch" additivity="false" level="INFO">
+      <appender-ref ref="main"/>
+    </asyncLogger>
+    <asyncLogger name="org.opensearch" additivity="false" level="INFO">
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="io.netty" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="com.zaxxer.hikari" additivity="false" level="ERROR">
-      <appender-ref ref="mainFile"/>
+      <appender-ref ref="main"/>
+    </asyncLogger>
+    <asyncLogger name="org.apache.zookeeper" additivity="false" level="ERROR">
+      <appender-ref ref="main"/>
+    </asyncLogger>
+    <asyncLogger name="org.apache.curator" additivity="false" level="ERROR">
       <appender-ref ref="main"/>
     </asyncLogger>
     
     <!-- To enable when setting 'mail.debug=true' in mail.properties -->
     <!--<asyncLogger name="org.apache.syncope.core.provisioning.java.job.notification" additivity="false" level="DEBUG">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>
     <asyncLogger name="javax.mail" additivity="false" level="DEBUG">
-      <appender-ref ref="mainFile"/>
       <appender-ref ref="main"/>
     </asyncLogger>-->
     
-    <root level="ERROR">
-      <appender-ref ref="mainFile"/>
+    <root level="INFO">
       <appender-ref ref="main"/>
     </root>
     

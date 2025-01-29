@@ -306,136 +306,134 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-  &quot;@class&quot;: &quot;org.apache.syncope.common.lib.to.UserTO&quot;,&#xd;
-  &quot;type&quot;: &quot;USER&quot;,&#xd;
-  &quot;realm&quot;: &quot;/&quot;,&#xd;
-  &quot;password&quot;: &quot;password123&quot;,&#xd;
-  &quot;username&quot;: &quot;${username}&quot;,&#xd;
-  &quot;mustChangePassword&quot;: false,&#xd;
-  &quot;plainAttrs&quot;: [&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;email&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${username}@syncope.apache.org&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;firstname&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;fn_${username}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;address&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;Viale G. D&apos;Annunzio, 267 - 65127 Pescara - Italy&quot;,&#xd;
-        &quot;Via Papa Giovanni XXIII, 8 - 66010 Miglianico (CH) - Italy&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;birth place&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;Colle Corvino&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;surname&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;sn_${username}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;SSN&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${uniquevalue}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;gender&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;F&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;user type&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;Type ${__RandomString(1,ABCDEFGHIJ)}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;mobile&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${uniquevalue}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;birthday&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;1977-09-08&quot;&#xd;
-      ]&#xd;
-    }&#xd;
-  ],&#xd;
-  &quot;memberships&quot;: [&#xd;
-    {&#xd;
-      &quot;groupKey&quot;: &quot;e458f315-975e-4270-98f3-15975ea27057&quot;&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;groupKey&quot;: &quot;54b85719-91db-4917-b857-1991dbd91707&quot;,&#xd;
-      &quot;plainAttrs&quot;: [&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;recruitment&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;2017-05-11&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;contract start&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;2017-05-11&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;qualification&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Qualification&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;badge&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;${uniquevalue}&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;institution&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Institution&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;organization&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Organization&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;contract level&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Contract Level&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;id number&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;${uniquevalue}&quot;&#xd;
-          ]&#xd;
-        }&#xd;
-      ]&#xd;
-    }&#xd;
-  ]&#xd;
-}&#xd;
-</stringProp>
+                <stringProp name="Argument.value">{
+  &quot;_class&quot;: &quot;org.apache.syncope.common.lib.request.UserCR&quot;,
+  &quot;realm&quot;: &quot;/&quot;,
+  &quot;password&quot;: &quot;password123&quot;,
+  &quot;username&quot;: &quot;${username}&quot;,
+  &quot;mustChangePassword&quot;: false,
+  &quot;plainAttrs&quot;: [
+    {
+      &quot;schema&quot;: &quot;email&quot;,
+      &quot;values&quot;: [
+        &quot;${username}@syncope.apache.org&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;firstname&quot;,
+      &quot;values&quot;: [
+        &quot;fn_${username}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;address&quot;,
+      &quot;values&quot;: [
+        &quot;Viale Vittoria Colonna, 97 - 65127 Pescara - Italy&quot;,
+        &quot;Via Papa Giovanni XXIII, 8 - 66010 Miglianico (CH) - Italy&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;birth place&quot;,
+      &quot;values&quot;: [
+        &quot;Colle Corvino&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;surname&quot;,
+      &quot;values&quot;: [
+        &quot;sn_${username}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;SSN&quot;,
+      &quot;values&quot;: [
+        &quot;${uniquevalue}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;gender&quot;,
+      &quot;values&quot;: [
+        &quot;F&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;user type&quot;,
+      &quot;values&quot;: [
+        &quot;Type ${__RandomString(1,ABCDEFGHIJ)}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;mobile&quot;,
+      &quot;values&quot;: [
+        &quot;${uniquevalue}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;birthday&quot;,
+      &quot;values&quot;: [
+        &quot;1977-09-08&quot;
+      ]
+    }
+  ],
+  &quot;memberships&quot;: [
+    {
+      &quot;groupKey&quot;: &quot;e458f315-975e-4270-98f3-15975ea27057&quot;
+    },
+    {
+      &quot;groupKey&quot;: &quot;54b85719-91db-4917-b857-1991dbd91707&quot;,
+      &quot;plainAttrs&quot;: [
+        {
+          &quot;schema&quot;: &quot;recruitment&quot;,
+          &quot;values&quot;: [
+            &quot;2017-05-11&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;contract start&quot;,
+          &quot;values&quot;: [
+            &quot;2017-05-11&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;qualification&quot;,
+          &quot;values&quot;: [
+            &quot;Qualification&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;badge&quot;,
+          &quot;values&quot;: [
+            &quot;${uniquevalue}&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;institution&quot;,
+          &quot;values&quot;: [
+            &quot;Institution&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;organization&quot;,
+          &quot;values&quot;: [
+            &quot;Organization&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;contract level&quot;,
+          &quot;values&quot;: [
+            &quot;Contract Level&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;id number&quot;,
+          &quot;values&quot;: [
+            &quot;${uniquevalue}&quot;
+          ]
+        }
+      ]
+    }
+  ]
+}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -633,136 +631,134 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-  &quot;@class&quot;: &quot;org.apache.syncope.common.lib.to.UserTO&quot;,&#xd;
-  &quot;type&quot;: &quot;USER&quot;,&#xd;
-  &quot;realm&quot;: &quot;/&quot;,&#xd;
-  &quot;password&quot;: &quot;password123&quot;,&#xd;
-  &quot;username&quot;: &quot;${newUsername}&quot;,&#xd;
-  &quot;mustChangePassword&quot;: false,&#xd;
-  &quot;plainAttrs&quot;: [&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;email&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${newUsername}@syncope.apache.org&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;firstname&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${newFirstname}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;address&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;Viale G. D&apos;Annunzio, 267 - 65127 Pescara - Italy&quot;,&#xd;
-        &quot;Via Papa Giovanni XXIII, 8 - 66010 Miglianico (CH) - Italy&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;birth place&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;Colle Corvino&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;surname&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${newSurname}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;SSN&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${uniquevalue}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;gender&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;F&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;user type&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;Type ${__RandomString(1,ABCDEFGHIJ)}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;mobile&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;${uniquevalue}&quot;&#xd;
-      ]&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;schema&quot;: &quot;birthday&quot;,&#xd;
-      &quot;values&quot;: [&#xd;
-        &quot;1977-09-08&quot;&#xd;
-      ]&#xd;
-    }&#xd;
-  ],&#xd;
-  &quot;memberships&quot;: [&#xd;
-    {&#xd;
-      &quot;groupKey&quot;: &quot;e458f315-975e-4270-98f3-15975ea27057&quot;&#xd;
-    },&#xd;
-    {&#xd;
-      &quot;groupKey&quot;: &quot;54b85719-91db-4917-b857-1991dbd91707&quot;,&#xd;
-      &quot;plainAttrs&quot;: [&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;recruitment&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;2017-05-11&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;contract start&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;2017-05-11&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;qualification&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Qualification&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;badge&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;${uniquevalue}&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;institution&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Institution&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;organization&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Organization&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;contract level&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;Contract Level&quot;&#xd;
-          ]&#xd;
-        },&#xd;
-        {&#xd;
-          &quot;schema&quot;: &quot;id number&quot;,&#xd;
-          &quot;values&quot;: [&#xd;
-            &quot;${uniquevalue}&quot;&#xd;
-          ]&#xd;
-        }&#xd;
-      ]&#xd;
-    }&#xd;
-  ]&#xd;
-}&#xd;
-</stringProp>
+                <stringProp name="Argument.value">{
+  &quot;_class&quot;: &quot;org.apache.syncope.common.lib.request.UserCR&quot;,
+  &quot;realm&quot;: &quot;/&quot;,
+  &quot;password&quot;: &quot;password123&quot;,
+  &quot;username&quot;: &quot;${newUsername}&quot;,
+  &quot;mustChangePassword&quot;: false,
+  &quot;plainAttrs&quot;: [
+    {
+      &quot;schema&quot;: &quot;email&quot;,
+      &quot;values&quot;: [
+        &quot;${newUsername}@syncope.apache.org&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;firstname&quot;,
+      &quot;values&quot;: [
+        &quot;${newFirstname}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;address&quot;,
+      &quot;values&quot;: [
+        &quot;Viale Vittoria Colonna, 97 - 65127 Pescara - Italy&quot;,
+        &quot;Via Papa Giovanni XXIII, 8 - 66010 Miglianico (CH) - Italy&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;birth place&quot;,
+      &quot;values&quot;: [
+        &quot;Colle Corvino&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;surname&quot;,
+      &quot;values&quot;: [
+        &quot;${newSurname}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;SSN&quot;,
+      &quot;values&quot;: [
+        &quot;${uniquevalue}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;gender&quot;,
+      &quot;values&quot;: [
+        &quot;F&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;user type&quot;,
+      &quot;values&quot;: [
+        &quot;Type ${__RandomString(1,ABCDEFGHIJ)}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;mobile&quot;,
+      &quot;values&quot;: [
+        &quot;${uniquevalue}&quot;
+      ]
+    },
+    {
+      &quot;schema&quot;: &quot;birthday&quot;,
+      &quot;values&quot;: [
+        &quot;1977-09-08&quot;
+      ]
+    }
+  ],
+  &quot;memberships&quot;: [
+    {
+      &quot;groupKey&quot;: &quot;e458f315-975e-4270-98f3-15975ea27057&quot;
+    },
+    {
+      &quot;groupKey&quot;: &quot;54b85719-91db-4917-b857-1991dbd91707&quot;,
+      &quot;plainAttrs&quot;: [
+        {
+          &quot;schema&quot;: &quot;recruitment&quot;,
+          &quot;values&quot;: [
+            &quot;2017-05-11&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;contract start&quot;,
+          &quot;values&quot;: [
+            &quot;2017-05-11&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;qualification&quot;,
+          &quot;values&quot;: [
+            &quot;Qualification&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;badge&quot;,
+          &quot;values&quot;: [
+            &quot;${uniquevalue}&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;institution&quot;,
+          &quot;values&quot;: [
+            &quot;Institution&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;organization&quot;,
+          &quot;values&quot;: [
+            &quot;Organization&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;contract level&quot;,
+          &quot;values&quot;: [
+            &quot;Contract Level&quot;
+          ]
+        },
+        {
+          &quot;schema&quot;: &quot;id number&quot;,
+          &quot;values&quot;: [
+            &quot;${uniquevalue}&quot;
+          ]
+        }
+      ]
+    }
+  ]
+}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -1275,20 +1271,20 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-  &quot;@class&quot;: &quot;org.apache.syncope.common.lib.patch.UserPatch&quot;,&#xd;
-  &quot;key&quot;: &quot;${key}&quot;,&#xd;
-  &quot;plainAttrs&quot;: [&#xd;
-    {&#xd;
-      &quot;operation&quot;: &quot;ADD_REPLACE&quot;,&#xd;
-      &quot;attrTO&quot;: {&#xd;
-        &quot;schema&quot;: &quot;email&quot;,&#xd;
-        &quot;values&quot;: [&#xd;
-          &quot;${__UUID}@tirasa.net&quot;&#xd;
-        ]&#xd;
-      }&#xd;
-    }&#xd;
-  ]&#xd;
+                <stringProp name="Argument.value">{
+  &quot;_class&quot;: &quot;org.apache.syncope.common.lib.request.UserUR&quot;,
+  &quot;key&quot;: &quot;${key}&quot;,
+  &quot;plainAttrs&quot;: [
+    {
+      &quot;operation&quot;: &quot;ADD_REPLACE&quot;,
+      &quot;attr&quot;: {
+        &quot;schema&quot;: &quot;email&quot;,
+        &quot;values&quot;: [
+          &quot;${__UUID}@tirasa.net&quot;
+        ]
+      }
+    }
+  ]
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
