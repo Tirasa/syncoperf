@@ -131,21 +131,22 @@
 
           <h4>Environment</h4>
           <ul>
-            <li>Apache Syncope 3.0.10</li>
-            <li>Apache Maven 3.9.9</li>
-            <li>Docker CE 27.5.1</li>
-            <li>OpenJDK Zulu 17.0.14</li>
-            <li>Debian 12</li>
-            <li><a href="https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/compute-optimized/fsv2-series?tabs=sizebasic" target="_blank">Standard F4s v2</a> Azure VM - 4 CPU cores, 8 GB RAM</li>
+            <li>Apache Syncope 2.1.3-SNAPSHOT</li>
+            <li>Apache Maven 3.6.0</li>
+            <li>Docker CE 5:18.09</li>
+            <li>Oracle JDK 1.8.0_191</li>
+            <li>Ubuntu 18.04</li>
+            <li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes-compute#fs-series-sup1sup" target="_blank">Standard_F4s</a> Azure VM - 4 CPU cores, 8 GB RAM</li>
           </ul>
 
           <h4>Reports</h4>
           <div id="accordion">
             <div class="group">
-              <h3>PostgreSQL 16</h3>
+              <h3>PostgreSQL 11.1</h3>
               <table id="results" class="table table-striped table-hover table-bordered table-sm" style="width: 100%;">
                 <thead>
                   <tr>
+                    <th class="th-sm">Persistence</th>
                     <th class="th-sm"># Users</th>
                     <th class="th-sm">Dynamic Memberships</th>
                     <th class="th-sm">Elasticsearch</th>
@@ -155,6 +156,15 @@
                 </thead>
                 <tbody>
                   <tr>
+                    <td>Standard</td>
+                    <td class="text-right">1,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./postgres-1k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres -Dbulk.load.users=1000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
                     <td class="text-right">1,000</td>
                     <td class="text-center"><i class="fa fa-check"></i></td>
                     <td class="text-center"></td>
@@ -162,6 +172,23 @@
                     <td><code>-Ppgjsonb -Dbulk.load.users=1000</code></td>
                   </tr>
                   <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./postgres-10k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./postgres-nodyn-10k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres,nodyn -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
                     <td class="text-right">10,000</td>
                     <td class="text-center"><i class="fa fa-check"></i></td>
                     <td class="text-center"></td>
@@ -169,6 +196,7 @@
                     <td><code>-Ppgjsonb -Dbulk.load.users=10000</code></td>
                   </tr>
                   <tr>
+                    <td>JSONB</td>
                     <td class="text-right">10,000</td>
                     <td class="text-center"></td>
                     <td class="text-center"></td>
@@ -176,6 +204,15 @@
                     <td><code>-Ppgjsonb,nodyn -Dbulk.load.users=10000</code></td>
                   </tr>
                   <tr>
+                    <td>Standard</td>
+                    <td class="text-right">100,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"><a href="./postgres-nodyn-es-100k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
+                  </tr>
+                  <tr>
+                    <td>JSONB</td>
                     <td class="text-right">100,000</td>
                     <td class="text-center"></td>
                     <td class="text-center"><i class="fa fa-check"></i></td>
@@ -183,11 +220,110 @@
                     <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
                   </tr>
                   <tr>
+                    <td>JSONB</td>
                     <td class="text-right">1,000,000</td>
                     <td class="text-center"></td>
                     <td class="text-center"><i class="fa fa-check"></i></td>
                     <td class="text-center"><a href="./pgjsonb-nodyn-es-1m/index.html"><i class="fa fa-link"></i></a></td>
                     <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="group">
+              <h3>MariaDB 10.4</h3>
+              <table id="results" class="table table-striped table-hover table-bordered table-sm" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th class="th-sm">Persistence</th>
+                    <th class="th-sm"># Users</th>
+                    <th class="th-sm">Dynamic Memberships</th>
+                    <th class="th-sm">Elasticsearch</th>
+                    <th class="th-sm">Report</th>
+                    <th class="th-sm">Maven args</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">1,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./mariadb-1k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmariadb -Dbulk.load.users=1000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./mariadb-10k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmariadb -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./mariadb-nodyn-10k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmariadb,nodyn -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">100,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"><a href="./mariadb-nodyn-es-100k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmariadb,nodyn,es -Dbulk.load.users=100000</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="group">
+              <h3>MySQL 8.0.13</h3>
+              <table id="results" class="table table-striped table-hover table-bordered table-sm" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th class="th-sm">Persistence</th>
+                    <th class="th-sm"># Users</th>
+                    <th class="th-sm">Dynamic Memberships</th>
+                    <th class="th-sm">Elasticsearch</th>
+                    <th class="th-sm">Report</th>
+                    <th class="th-sm">Maven args</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">1,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./mysql-1k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmysql -Dbulk.load.users=1000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./mysql-10k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmysql -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">10,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><a href="./mysql-nodyn-10k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmysql,nodyn -Dbulk.load.users=10000</code></td>
+                  </tr>
+                  <tr>
+                    <td>Standard</td>
+                    <td class="text-right">100,000</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><i class="fa fa-check"></i></td>
+                    <td class="text-center"><a href="./mysql-nodyn-es-100k/index.html"><i class="fa fa-link"></i></a></td>
+                    <td><code>-Pmysql,nodyn,es -Dbulk.load.users=100000</code></td>
                   </tr>
                 </tbody>
               </table>
