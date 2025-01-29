@@ -99,3 +99,4 @@ License
 -------
 
 flot-axislabels is released under the terms of [the MIT License](http://www.opensource.org/licenses/MIT).
+
