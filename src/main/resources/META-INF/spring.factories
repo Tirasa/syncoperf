@@ -15,12 +15,5 @@
 # specific language governing permissions and limitations
 # under the License.
 
-server.port=9080
-
-spring.main.allow-bean-definition-overriding=true
-
-management.endpoints.web.exposure.include=health,info,beans,env,loggers,entityCache
-
-keymaster.address=http://localhost:9080/syncope/rest/keymaster
-keymaster.username=${anonymousUser}
-keymaster.password=${anonymousKey}
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  net.tirasa.syncoperf.SyncoperfContext

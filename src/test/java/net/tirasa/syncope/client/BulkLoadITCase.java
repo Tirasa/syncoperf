@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -28,18 +30,28 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.Attr;
 import org.apache.syncope.common.lib.SyncopeConstants;
 import org.apache.syncope.common.lib.request.UserCR;
 import org.apache.syncope.common.lib.to.ExecTO;
+import org.apache.syncope.common.lib.to.ImplementationTO;
 import org.apache.syncope.common.lib.to.MembershipTO;
+import org.apache.syncope.common.lib.to.SchedTaskTO;
 import org.apache.syncope.common.lib.to.TaskTO;
+import org.apache.syncope.common.lib.types.IdRepoImplementationType;
+import org.apache.syncope.common.lib.types.ImplementationEngine;
 import org.apache.syncope.common.lib.types.TaskType;
+import org.apache.syncope.common.rest.api.RESTHeaders;
 import org.apache.syncope.common.rest.api.beans.ExecSpecs;
+import org.apache.syncope.common.rest.api.service.ImplementationService;
 import org.apache.syncope.common.rest.api.service.TaskService;
 import org.apache.syncope.common.rest.api.service.UserService;
 import org.apache.syncope.core.spring.security.SecureRandomUtils;
@@ -50,30 +62,46 @@ import org.slf4j.LoggerFactory;
 
 public class BulkLoadITCase {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(BulkLoadITCase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BulkLoadITCase.class);
 
-    private static final SyncopeClientFactoryBean CLIENT_FACTORY =
-            new SyncopeClientFactoryBean().setAddress("http://localhost:9080/syncope/rest/");
+    private static final JsonMapper JSON_MAPPER = JsonMapper.builder().findAndAddModules().build();
 
-    protected static final String ADMIN_UNAME = "admin";
+    private static final String ADDRESS = "http://localhost:9080/syncope/rest";
 
-    protected static final String ADMIN_PWD = "password";
+    private static final String ES_REINDEX = "org.apache.syncope.core.provisioning.java.job.ElasticsearchReindex";
 
-    protected static SyncopeClient ADMIN_CLIENT;
+    private static final SyncopeClientFactoryBean CLIENT_FACTORY = new SyncopeClientFactoryBean().setAddress(ADDRESS);
 
-    protected static TaskService TASK_SERVICE;
+    private static final String ADMIN_UNAME = "admin";
+
+    private static final String ADMIN_PWD = "password";
+
+    private static SyncopeClient ADMIN_CLIENT;
+
+    private static TaskService TASK_SERVICE;
+
+    protected static ImplementationService IMPLEMENTATION_SERVICE;
+
+    private static String ANONYMOUS_UNAME;
+
+    private static String ANONYMOUS_KEY;
+
+    private static boolean IS_EXT_SEARCH_ENABLED = false;
 
     private static final int THREADS = 10;
 
     private static Integer USERS;
 
     @BeforeAll
-    public static void setup() {
+    public static void setup() throws IOException {
         Properties props = new Properties();
         try (InputStream propStream = BulkLoadITCase.class.getResourceAsStream("/bulkLoad.properties")) {
             props.load(propStream);
 
             USERS = Integer.valueOf(props.getProperty("bulk.load.users"));
+
+            ANONYMOUS_UNAME = props.getProperty("security.anonymousUser");
+            ANONYMOUS_KEY = props.getProperty("security.anonymousKey");
         } catch (IOException e) {
             fail(e.getMessage());
         }
@@ -81,9 +109,21 @@ public class BulkLoadITCase {
 
         ADMIN_CLIENT = CLIENT_FACTORY.create(ADMIN_UNAME, ADMIN_PWD);
         TASK_SERVICE = ADMIN_CLIENT.getService(TaskService.class);
+        IMPLEMENTATION_SERVICE = ADMIN_CLIENT.getService(ImplementationService.class);
+
+        JsonNode beans = JSON_MAPPER.readTree(
+                (InputStream) WebClient.create(
+                        StringUtils.substringBeforeLast(ADDRESS, "/") + "/actuator/beans",
+                        ANONYMOUS_UNAME,
+                        ANONYMOUS_KEY,
+                        null).
+                        accept(MediaType.APPLICATION_JSON).get().getEntity());
+
+        JsonNode anySearchDAO = beans.findValues("anySearchDAO").get(0);
+        IS_EXT_SEARCH_ENABLED = anySearchDAO.get("type").asText().contains("Elasticsearch");
     }
 
-    protected static ExecTO execTask(
+    private static ExecTO execTask(
             final TaskType type,
             final String taskKey,
             final String initialStatus,
@@ -106,6 +146,34 @@ public class BulkLoadITCase {
         });
 
         return taskTO.get().getExecutions().get(taskTO.get().getExecutions().size() - 1);
+    }
+
+    @BeforeAll
+    public static void elasticsearchInit() {
+        if (IS_EXT_SEARCH_ENABLED) {
+            ImplementationTO elasticSearchReindex = new ImplementationTO();
+            elasticSearchReindex.setKey(ES_REINDEX);
+            elasticSearchReindex.setEngine(ImplementationEngine.JAVA);
+            elasticSearchReindex.setType(IdRepoImplementationType.TASKJOB_DELEGATE);
+            elasticSearchReindex.setBody(ES_REINDEX);
+            Response response = IMPLEMENTATION_SERVICE.create(elasticSearchReindex);
+            elasticSearchReindex = IMPLEMENTATION_SERVICE.read(
+                    elasticSearchReindex.getType(), response.getHeaderString(RESTHeaders.RESOURCE_KEY));
+            assertNotNull(elasticSearchReindex);
+
+            SchedTaskTO task = new SchedTaskTO();
+            task.setActive(true);
+            task.setName(ES_REINDEX);
+            task.setJobDelegate(elasticSearchReindex.getKey());
+            response = TASK_SERVICE.create(TaskType.SCHEDULED, task);
+
+            execTask(
+                    TaskType.SCHEDULED,
+                    response.getHeaderString(RESTHeaders.RESOURCE_KEY),
+                    null,
+                    30,
+                    false);
+        }
     }
 
     private static UserCR build() {
