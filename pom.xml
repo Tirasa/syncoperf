@@ -228,11 +228,11 @@
             <configuration>
               <transformationSets>
                 <transformationSet>
-                  <dir>${project.build.directory}/test-classes</dir>
+                  <dir>${project.build.outputDirectory}/domains</dir>
                   <includes>
-                    <include>domains/MasterContent.xml</include>
+                    <include>MasterContent.xml</include>
                   </includes>
-                  <outputDir>${project.build.directory}/test-classes</outputDir>
+                  <outputDir>${project.build.outputDirectory}/domains</outputDir>
                   <stylesheet>${basedir}/src/test/resources/nodyn.xsl</stylesheet>
                   <outputProperties>
                     <outputProperty>
