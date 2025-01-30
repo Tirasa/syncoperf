@@ -262,6 +262,11 @@
       <dependencies>
         <dependency>
           <groupId>org.apache.syncope.ext.elasticsearch</groupId>
+          <artifactId>syncope-ext-elasticsearch-logic</artifactId>
+          <version>${syncope.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.syncope.ext.elasticsearch</groupId>
           <artifactId>syncope-ext-elasticsearch-provisioning-java</artifactId>
           <version>${syncope.version}</version>
         </dependency>
@@ -271,44 +276,32 @@
           <version>${syncope.version}</version>
         </dependency>
       </dependencies>
-      
+
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <inherited>true</inherited>
-            <executions>
-              <execution>
-                <id>enable-elasticsearch</id>
-                <phase>prepare-package</phase>
-                <configuration>
-                  <target>
-                    <replaceregexp file="${project.build.directory}/test-classes/persistence.properties" byline="true"
-                                   match="any.search.dao=.*"
-                                   replace="any.search.dao=org.apache.syncope.core.persistence.jpa.dao.ElasticsearchAnySearchDAO"/>
-                  </target>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-war-plugin</artifactId>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
             <configuration>
-              <webResources>
-                <resource>
-                  <directory>src/main/webapp/WEB-INF</directory>
-                  <excludes>
-                    <exclude>web.xml</exclude>
-                  </excludes>
-                </resource>
-              </webResources>
-              <webXml>${basedir}/src/main/resources/elasticsearch/web.xml</webXml>
+              <images>
+                <image>
+                  <name>docker.elastic.co/elasticsearch/elasticsearch:${elasticsearch.version}</name>
+                  <run>
+                    <env>
+                      <discovery.type>single-node</discovery.type>
+                      <cluster.name>elasticsearch</cluster.name>
+                      <cluster.routing.allocation.disk.threshold_enabled>false</cluster.routing.allocation.disk.threshold_enabled>
+                      <xpack.security.enabled>false</xpack.security.enabled>
+                      <ingest.geoip.downloader.enabled>false</ingest.geoip.downloader.enabled>
+                      <ES_JAVA_OPTS>-Xms750m -Xmx750m</ES_JAVA_OPTS>
+                    </env>
+                    <ports>
+                      <port>9200:9200</port>
+                      <port>9300:9300</port>
+                    </ports>
+                  </run>
+                </image>
+              </images>
             </configuration>
           </plugin>
         </plugins>
