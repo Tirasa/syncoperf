@@ -371,7 +371,7 @@
             <configuration>
               <systemPropertyVariables>
                 <DB_CONTAINER_IP>${docker.container.postgres.ip}</DB_CONTAINER_IP>
-              </systemPropertyVariables>              
+              </systemPropertyVariables>
             </configuration>
           </plugin>  
         </plugins>
@@ -379,14 +379,13 @@
     </profile>
 
     <profile>
-      <id>mariadb</id>
+      <id>majson</id>
 
       <dependencies>
         <dependency>
           <groupId>org.mariadb.jdbc</groupId>
           <artifactId>mariadb-java-client</artifactId>
           <version>${jdbc.mariadb.version}</version>
-          <scope>test</scope>
         </dependency>
       </dependencies>
 
@@ -400,20 +399,7 @@
             <configuration>
               <images>
                 <image>
-                  <name>docker.elastic.co/elasticsearch/elasticsearch:${elasticsearch.version}</name>
-                  <run>
-                    <env>
-                      <discovery.type>single-node</discovery.type>
-                      <cluster.name>elasticsearch</cluster.name>
-                      <xpack.security.enabled>false</xpack.security.enabled>
-                    </env>
-                    <ports>
-                      <port>9200:9200</port>
-                      <port>9300:9300</port>
-                    </ports>
-                  </run>
-                </image>
-                <image>
+                  <alias>mariadb</alias>
                   <name>mariadb:${docker.mariadb.version}</name>
                   <run>
                     <env>
@@ -422,27 +408,61 @@
                       <MYSQL_USER>syncope</MYSQL_USER>
                       <MYSQL_PASSWORD>syncope</MYSQL_PASSWORD>
                     </env>
-                    <ports>
-                      <port>3306:3306</port>
-                    </ports>
+                    <tmpfs>
+                      <mount>/var/lib/mysql:rw</mount>
+                    </tmpfs>
                     <wait>
-                      <log>MySQL init process done. Ready for start up.</log>
-                      <time>120000</time>
+                      <log>MariaDB init process done. Ready for start up.</log>
+                      <time>30000</time>
                     </wait>
                   </run>
                 </image>
+                <image>
+                  <name>docker.elastic.co/elasticsearch/elasticsearch:${elasticsearch.version}</name>
+                  <run>
+                    <env>
+                      <discovery.type>single-node</discovery.type>
+                      <cluster.name>elasticsearch</cluster.name>
+                      <cluster.routing.allocation.disk.threshold_enabled>false</cluster.routing.allocation.disk.threshold_enabled>
+                      <xpack.security.enabled>false</xpack.security.enabled>
+                      <ingest.geoip.downloader.enabled>false</ingest.geoip.downloader.enabled>
+                      <ES_JAVA_OPTS>-Xms750m -Xmx750m</ES_JAVA_OPTS>
+                    </env>
+                    <ports>
+                      <port>9200:9200</port>
+                      <port>9300:9300</port>
+                    </ports>
+                    <tmpfs>
+                      <mount>/opt/elasticsearch/volatile/data:rw</mount>
+                      <mount>/opt/elasticsearch/volatile/logs:rw</mount>
+                      <mount>/tmp:rw</mount>
+                    </tmpfs>
+                    <ulimits>
+                      <ulimit>
+                        <name>nofile</name>
+                        <hard>65536</hard>
+                        <soft>65536</soft>
+                      </ulimit>
+                      <ulimit>
+                        <name>memlock</name>
+                        <hard>-1</hard>
+                        <soft>-1</soft>
+                      </ulimit>
+                    </ulimits>
+                  </run>
+                </image>                
               </images>
             </configuration>
             <executions>
               <execution>
-                <id>start-mariadb</id>
+                <id>start-docker</id>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>start</goal>
                 </goals>
               </execution>
               <execution>
-                <id>stop-mariadb</id>
+                <id>stop-docker</id>
                 <phase>post-integration-test</phase>
                 <goals>
                   <goal>stop</goal>
@@ -453,57 +473,15 @@
           </plugin>
 
           <plugin>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <inherited>true</inherited>
-            <executions>
-              <execution>
-                <id>start-container</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>stop-container</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>stop</goal>
-                </goals>
-              </execution>
-            </executions>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <DB_CONTAINER_IP>${docker.container.mariadb.ip}</DB_CONTAINER_IP>
+              </systemPropertyVariables>
+            </configuration>
           </plugin>
         </plugins>
-
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-            <excludes>
-              <exclude>persistence.properties</exclude>
-              <exclude>provisioning.properties</exclude>
-            </excludes>
-          </resource>
-          <resource>
-            <directory>src/main/resources/mariadb</directory>
-            <filtering>true</filtering>
-          </resource>
-        </resources>
-        <testResources>
-          <testResource>
-            <directory>src/main/resources/mariadb</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>persistence.properties</include>
-              <include>provisioning.properties</include>
-            </includes>    
-          </testResource>
-          <testResource>
-            <directory>src/main/resources/mariadb/domains</directory>
-            <targetPath>${project.build.directory}/test-classes/domains</targetPath>
-            <filtering>true</filtering>
-          </testResource>
-        </testResources>
       </build>
     </profile>
   </profiles>
