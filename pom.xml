@@ -379,6 +379,114 @@
     </profile>
 
     <profile>
+      <id>myjson</id>
+
+      <dependencies>
+        <dependency>
+          <groupId>com.mysql</groupId>
+          <artifactId>mysql-connector-j</artifactId>
+          <version>${jdbc.mysql.version}</version>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <defaultGoal>clean verify</defaultGoal>
+
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <configuration>
+              <images>
+                <image>
+                  <alias>mysql</alias>
+                  <name>mysql/mysql-server:${docker.mysql.version}</name>
+                  <run>
+                    <cmd>--skip-log-bin --server-id=1 --sort_buffer_size=348M</cmd>
+                    <env>
+                      <MYSQL_ROOT_PASSWORD>password</MYSQL_ROOT_PASSWORD>
+                      <MYSQL_DATABASE>syncope</MYSQL_DATABASE>
+                      <MYSQL_USER>syncope</MYSQL_USER>
+                      <MYSQL_PASSWORD>syncope</MYSQL_PASSWORD>
+                    </env>
+                    <tmpfs>
+                      <mount>/var/lib/mysql:rw</mount>
+                    </tmpfs>
+                    <wait>
+                      <log>MySQL init process done. Ready for start up.</log>
+                      <time>30000</time>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>docker.elastic.co/elasticsearch/elasticsearch:${elasticsearch.version}</name>
+                  <run>
+                    <env>
+                      <discovery.type>single-node</discovery.type>
+                      <cluster.name>elasticsearch</cluster.name>
+                      <cluster.routing.allocation.disk.threshold_enabled>false</cluster.routing.allocation.disk.threshold_enabled>
+                      <xpack.security.enabled>false</xpack.security.enabled>
+                      <ingest.geoip.downloader.enabled>false</ingest.geoip.downloader.enabled>
+                      <ES_JAVA_OPTS>-Xms750m -Xmx750m</ES_JAVA_OPTS>
+                    </env>
+                    <ports>
+                      <port>9200:9200</port>
+                      <port>9300:9300</port>
+                    </ports>
+                    <tmpfs>
+                      <mount>/opt/elasticsearch/volatile/data:rw</mount>
+                      <mount>/opt/elasticsearch/volatile/logs:rw</mount>
+                      <mount>/tmp:rw</mount>
+                    </tmpfs>
+                    <ulimits>
+                      <ulimit>
+                        <name>nofile</name>
+                        <hard>65536</hard>
+                        <soft>65536</soft>
+                      </ulimit>
+                      <ulimit>
+                        <name>memlock</name>
+                        <hard>-1</hard>
+                        <soft>-1</soft>
+                      </ulimit>
+                    </ulimits>
+                  </run>
+                </image>                
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-docker</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-docker</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                  <goal>remove</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <DB_CONTAINER_IP>${docker.container.mysql.ip}</DB_CONTAINER_IP>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <id>majson</id>
 
       <dependencies>
