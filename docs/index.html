@@ -159,35 +159,35 @@
                     <td class="text-center"><i class="fa fa-check"></i></td>
                     <td class="text-center"></td>
                     <td class="text-center"><a href="./pgjsonb-1k/index.html"><i class="fa fa-link"></i></a></td>
-                    <td><code>-Ppgjsonb -Dbulk.load.users=1000</code></td>
+                    <td><code>-Ppgjsonb -Dspring-boot.run.profiles=syncoperf,pgjsonb -Dbulk.load.users=1000</code></td>
                   </tr>
                   <tr>
                     <td class="text-right">10,000</td>
                     <td class="text-center"><i class="fa fa-check"></i></td>
                     <td class="text-center"></td>
                     <td class="text-center"><a href="./pgjsonb-10k/index.html"><i class="fa fa-link"></i></a></td>
-                    <td><code>-Ppgjsonb -Dbulk.load.users=10000</code></td>
+                    <td><code>-Ppgjsonb -Dspring-boot.run.profiles=syncoperf,pgjsonb -Dbulk.load.users=10000</code></td>
                   </tr>
                   <tr>
                     <td class="text-right">10,000</td>
                     <td class="text-center"></td>
                     <td class="text-center"></td>
                     <td class="text-center"><a href="./pgjsonb-nodyn-10k/index.html"><i class="fa fa-link"></i></a></td>
-                    <td><code>-Ppgjsonb,nodyn -Dbulk.load.users=10000</code></td>
+                    <td><code>-Ppgjsonb,nodyn -Dspring-boot.run.profiles=syncoperf,pgjsonb -Dbulk.load.users=10000</code></td>
                   </tr>
                   <tr>
                     <td class="text-right">100,000</td>
                     <td class="text-center"></td>
                     <td class="text-center"><i class="fa fa-check"></i></td>
                     <td class="text-center"><a href="./pgjsonb-nodyn-es-100k/index.html"><i class="fa fa-link"></i></a></td>
-                    <td><code>-Ppostgres,nodyn,es -Dbulk.load.users=100000</code></td>
+                    <td><code>-Ppostgres,nodyn -Dspring-boot.run.profiles=syncoperf,pgjsonb,es -Dbulk.load.users=100000</code></td>
                   </tr>
                   <tr>
                     <td class="text-right">1,000,000</td>
                     <td class="text-center"></td>
                     <td class="text-center"><i class="fa fa-check"></i></td>
                     <td class="text-center"><a href="./pgjsonb-nodyn-es-1m/index.html"><i class="fa fa-link"></i></a></td>
-                    <td><code>-Ppgjsonb,nodyn,es -Dbulk.load.users=1000000</code></td>
+                    <td><code>-Ppgjsonb,nodyn -Dspring-boot.run.profiles=syncoperf,pgjsonb,es -Dbulk.load.users=1000000</code></td>
                   </tr>
                 </tbody>
               </table>
