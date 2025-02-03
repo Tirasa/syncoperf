@@ -29,7 +29,7 @@
   <name>Apache Syncope Performance Tools</name>
   <groupId>net.tirasa.syncope</groupId>
   <artifactId>syncoperf</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <properties>
     <syncope.version>3.0.10</syncope.version>
