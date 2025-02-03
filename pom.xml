@@ -191,6 +191,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <mainClass>org.apache.syncope.core.starter.SyncopeCoreApplication</mainClass>
+          <jvmArguments>-Xmx8g</jvmArguments>
           <systemPropertyVariables>
             <syncope.conf.dir>${project.build.directory}/test-classes</syncope.conf.dir>
             <syncope.connid.location>file:${bundles.directory}/</syncope.connid.location>
