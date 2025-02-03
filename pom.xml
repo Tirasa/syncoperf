@@ -317,6 +317,10 @@
                       <xpack.security.enabled>false</xpack.security.enabled>
                       <ingest.geoip.downloader.enabled>false</ingest.geoip.downloader.enabled>
                     </env>
+                    <wait>
+                      <log>"message":"started</log>
+                      <time>30000</time>
+                    </wait>
                     <ports>
                       <port>9200:9200</port>
                       <port>9300:9300</port>
