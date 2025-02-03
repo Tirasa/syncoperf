@@ -305,9 +305,6 @@
                       <log>database system is ready to accept connections</log>
                       <time>30000</time>
                     </wait>
-                    <tmpfs>
-                      <mount>/var/lib/postgresql/data:rw</mount>
-                    </tmpfs>
                   </run>
                 </image>
                 <image>
@@ -319,29 +316,11 @@
                       <cluster.routing.allocation.disk.threshold_enabled>false</cluster.routing.allocation.disk.threshold_enabled>
                       <xpack.security.enabled>false</xpack.security.enabled>
                       <ingest.geoip.downloader.enabled>false</ingest.geoip.downloader.enabled>
-                      <ES_JAVA_OPTS>-Xms750m -Xmx750m</ES_JAVA_OPTS>
                     </env>
                     <ports>
                       <port>9200:9200</port>
                       <port>9300:9300</port>
                     </ports>
-                    <tmpfs>
-                      <mount>/opt/elasticsearch/volatile/data:rw</mount>
-                      <mount>/opt/elasticsearch/volatile/logs:rw</mount>
-                      <mount>/tmp:rw</mount>
-                    </tmpfs>
-                    <ulimits>
-                      <ulimit>
-                        <name>nofile</name>
-                        <hard>65536</hard>
-                        <soft>65536</soft>
-                      </ulimit>
-                      <ulimit>
-                        <name>memlock</name>
-                        <hard>-1</hard>
-                        <soft>-1</soft>
-                      </ulimit>
-                    </ulimits>
                   </run>
                 </image>                
               </images>
