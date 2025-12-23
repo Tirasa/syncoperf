@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.syncope</groupId>
     <artifactId>syncope</artifactId>
-    <version>3.0.10</version>
+    <version>4.0.3</version>
   </parent>
 
   <name>Apache Syncope Performance Tools</name>
